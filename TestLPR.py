@@ -1,15 +1,12 @@
+import glob
 import os
-import sys
 import re
+import sys
+
 import cv2
 import numpy as np
-import glob
-
-from PIL import Image
-from PIL import ImageFilter
-
-from pyocr import pyocr
-from pyocr import builders
+from PIL import Image, ImageFilter
+from pyocr import builders, pyocr
 
 # Params for Pre-Processing
 # PARAMS TESTED {13, 0}, {11,2}, {19,0}
