@@ -1,6 +1,7 @@
 from pytesseract import *
 import argparse
 import cv2
+import constants
 
 # We construct the argument parser
 # and parse the arguments
@@ -14,11 +15,16 @@ ap.add_argument("-c", "--min-conf",
 				help="mininum confidence value to filter weak text detection")
 args = vars(ap.parse_args())
 
+min_text_length = 3
+
 # We load the input image and then convert
 # it to RGB from BGR. We then use Tesseract
 # to localize each area of text in the input
 # image
-imageFile = args["image"].split("/")[1]
+if "/" in args["image"]:
+	imageFile = args["image"].split("/")[1]
+else:
+	imageFile = args["image"]
 images = cv2.imread(args["image"])
 rgb = cv2.cvtColor(images, cv2.COLOR_BGR2RGB)
 results = pytesseract.image_to_data(rgb, output_type=Output.DICT)
@@ -39,7 +45,7 @@ for i in range(0, len(results["text"])):
 	text = results["text"][i]
 	conf = int(results["conf"][i])
 	
-	if len(text) > 4:
+	if len(text) >= min_text_length:
 		# filter out weak confidence text localizations
 		if conf > args["min_conf"]:
 			
@@ -67,5 +73,5 @@ for i in range(0, len(results["text"])):
 		
 # After all, we will show the output image
 cv2.imshow("Image", images)
-cv2.imwrite("FoundText_{}".format(imageFile),images)
+cv2.imwrite("generated_outputs/FoundText_{}".format(imageFile),images)
 cv2.waitKey(0)

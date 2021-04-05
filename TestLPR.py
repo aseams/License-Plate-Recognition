@@ -8,16 +8,7 @@ import numpy as np
 from PIL import Image, ImageFilter
 from pyocr import builders, pyocr
 
-# Params for Pre-Processing
-# PARAMS TESTED {13, 0}, {11,2}, {19,0}
-ADAPTIVE_THRESH_BLOCK_SIZE = 13
-ADAPTIVE_THRESH_WEIGHT = 0
-
-# Params for Plate Detection
-SML_CTR_MIN_RATIO = 0.01			# 0.01
-SML_CTR_MAX_RATIO = 0.8			 	# 0.8
-PLATE_MAX_ASPECT_RATIO = 8			# 8
-CTR_MIN_EXTENT_RATIO = 0.75			# 0.75
+import constants
 
 def preprocesss(img, color=True):
 	#print('preprocess()')
