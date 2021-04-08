@@ -23,6 +23,7 @@ _EXAMPLE_INPUTS/
 _FAILED_TESTS/
 cropped_vehicle/
 .vscode/
+Presentation/
 
 # =========================
 # Operating System Files
