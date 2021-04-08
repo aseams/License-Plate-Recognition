@@ -2,6 +2,8 @@ import glob
 import os
 import re
 import sys
+import requests
+import json
 
 import cv2
 import numpy as np
@@ -9,6 +11,15 @@ from PIL import Image, ImageFilter
 from pyocr import builders, pyocr
 
 import constants
+
+ADAPTIVE_THRESH_BLOCK_SIZE = 13
+ADAPTIVE_THRESH_WEIGHT = 0
+
+# Params for Plate Detection
+SML_CTR_MIN_RATIO = 0.01			# 0.01
+SML_CTR_MAX_RATIO = 0.8			 	# 0.8
+PLATE_MAX_ASPECT_RATIO = 8			# 8
+CTR_MIN_EXTENT_RATIO = 0.75			# 0.75
 
 def preprocesss(img, color=True):
 	#print('preprocess()')
@@ -90,7 +101,6 @@ def ocr_plate(im):
 	txt = tool.image_to_string(im)
 	return txt
 
-
 def run_aplr(input_location, preprocess_location, plate_detected_location, plate_location):
 	for image in glob.glob("{0}/*.png".format(input_location)):
 		# print('in: ' + input_location)
@@ -118,6 +128,36 @@ def run_aplr(input_location, preprocess_location, plate_detected_location, plate
 		except:
 			print('error')
 
+
+def ocr_space_file(filename, overlay, api_key, language, OCREngine):
+	""" OCR.space API request with local file.
+		Python3.5 - not tested on 2.7
+	:param filename: Your file path & name.
+	:param overlay: Is OCR.space overlay required in your response.
+					Defaults to False.
+	:param api_key: OCR.space API key.
+					Defaults to 'helloworld'.
+	:param language: Language code to be used in OCR.
+					List of available language codes can be found on https://ocr.space/OCRAPI
+					Defaults to 'en'.
+	:return: Result in JSON format.
+	"""
+	print("Sent to API")
+	payload = {'isOverlayRequired': overlay,
+			   'apikey': api_key,
+			   'language': language,
+			   'OCREngine': OCREngine
+			   }
+	with open(filename, 'rb') as f:
+		r = requests.post('https://api.ocr.space/parse/image',
+						  files={filename: f},
+						  data=payload,
+						  )
+	print("Received API response")
+	print(json.dumps(r.json(),indent = 2, sort_keys = True))
+	return r.content.decode()
+
+
 def run_once(input_file):
 	dirs = ['detection', 'plate', 'preprocess']
 	for folder in dirs:
@@ -136,36 +176,48 @@ def run_once(input_file):
 	denoised_image = cv2.fastNlMeansDenoising(thresh1)
 	cv2.imwrite("preprocess/denoised.jpg", denoised_image)
 	detected_plate = find_plate_rectangle(denoised_image)
-	if detected_plate:
+	if not detected_plate:
+		detected_plate = find_plate_rectangle(img_gray)
+		print("img_gray")
+	if not detected_plate:
+		detected_plate = find_plate_rectangle(thresh1)
+		print("thresh1")
+	if not detected_plate:
 		# print('detected_plate: \n' + str(detected_plate))
 		# print('preprocessed_image: \n' + str(preprocessed_image))
-		ocr_text = extract_plate_value(detected_plate[-1],
-									   img, input_file,
-									   "detection",
-									   "plate")
+		overlay = True
+		api_key = constants.API_KEY
+		language = "eng"
+		filename = "standard.jpg"
+		OCREngine = 2
+		ocr_text = ocr_space_file(input_file, overlay, api_key, language, OCREngine)
+		# ocr_text = extract_plate_value(detected_plate[-1],
+		# 							   img, input_file,
+		# 							   "detection",
+		# 							   "plate")
 		# print('ocr_text: ' + str(ocr_text))
-		print('ocr_text: ' + str(ocr_text))
-		ocr_text = re.split('[\n,.=}]',ocr_text)
-		print('ocr_text_split: ' + str(ocr_text))
-		ocr_text = [word for word in ocr_text if len(word) in [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]]
-		print('ocr_text_len: ' + str(ocr_text))
-		if " " in ocr_text[0]:
-			state = ocr_text[0].strip()
-		else:
-			state = ocr_text[0]
+		print('ocr_text: ' + json.dumps(ocr_text, indent = 2))
+		# ocr_text = re.split('[\n,.=}]',ocr_text)
+		# print('ocr_text_split: ' + str(ocr_text))
+		# ocr_text = [word for word in ocr_text if len(word) in [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]]
+		# print('ocr_text_len: ' + str(ocr_text))
+		# if " " in ocr_text[0]:
+		# 	state = ocr_text[0].strip()
+		# else:
+		# 	state = ocr_text[0]
 
-		if " " in ocr_text[1]:
-			plate = ocr_text[1].strip()
-		else:
-			plate = ocr_text[1]
-		# print('ocr_text_final: ' + str(ocr_text))
-		state = stateExists(state)
-		if state == "error":
-			sys.exit("\nState not found/confirmed")
-		if confirmDB(state, plate):
-			print("Adding " + state + ":" + plate + " to database")
-		else:
-			print("Skipped adding " + state + ":" + plate + " to database.")
+		# if " " in ocr_text[1]:
+		# 	plate = ocr_text[1].strip()
+		# else:
+		# 	plate = ocr_text[1]
+		# # print('ocr_text_final: ' + str(ocr_text))
+		# state = stateExists(state)
+		# if state == "error":
+		# 	sys.exit("\nState not found/confirmed")
+		# if confirmDB(state, plate):
+		# 	print("Adding " + state + ":" + plate + " to database")
+		# else:
+		# 	print("Skipped adding " + state + ":" + plate + " to database.")
 		#print("Plate is: {0}".format(ocr_text.split("\n")[4]))
 		#print("Plate is: {}".format(ocr_text.split("; |, |\n")[4]))
 

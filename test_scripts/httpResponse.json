@@ -1,0 +1,83 @@
+{
+  "IsErroredOnProcessing": false,
+  "OCRExitCode": 1,
+  "ParsedResults": [
+    {
+      "ErrorDetails": "",
+      "ErrorMessage": "",
+      "FileParseExitCode": 1,
+      "ParsedText": "New Jersey\nZPT 958\nGarden State",
+      "TextOrientation": "0",
+      "TextOverlay": {
+        "HasOverlay": true,
+        "Lines": [
+          {
+            "LineText": "New Jersey",
+            "MaxHeight": 76.0,
+            "MinTop": 48.0,
+            "Words": [
+              {
+                "Height": 56.0,
+                "Left": 188.0,
+                "Top": 48.0,
+                "Width": 216.0,
+                "WordText": "New"
+              },
+              {
+                "Height": 76.0,
+                "Left": 416.0,
+                "Top": 48.0,
+                "Width": 320.0,
+                "WordText": "Jersey"
+              }
+            ]
+          },
+          {
+            "LineText": "ZPT 958",
+            "MaxHeight": 228.0,
+            "MinTop": 120.0,
+            "Words": [
+              {
+                "Height": 228.0,
+                "Left": 50.0,
+                "Top": 120.0,
+                "Width": 414.0,
+                "WordText": "ZPT"
+              },
+              {
+                "Height": 228.0,
+                "Left": 454.0,
+                "Top": 120.0,
+                "Width": 358.0,
+                "WordText": "958"
+              }
+            ]
+          },
+          {
+            "LineText": "Garden State",
+            "MaxHeight": 74.0,
+            "MinTop": 354.0,
+            "Words": [
+              {
+                "Height": 74.0,
+                "Left": 210.0,
+                "Top": 354.0,
+                "Width": 244.0,
+                "WordText": "Garden"
+              },
+              {
+                "Height": 74.0,
+                "Left": 478.0,
+                "Top": 354.0,
+                "Width": 188.0,
+                "WordText": "State"
+              }
+            ]
+          }
+        ],
+        "Message": "Total lines: 3"
+      }
+    }
+  ],
+  "ProcessingTimeInMilliseconds": "375"
+}
