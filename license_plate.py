@@ -5,7 +5,7 @@ from PIL import Image
 import PIL
 
 #reading in the input image
-plate = cv2.imread("D:/andys/Documents/Kean University/4 Spring 2021/Senior Project/ProjCode/RESTART/20210325_113555.jpg")
+plate = cv2.imread("D:/andys/Documents/Kean University/4 Spring 2021/Senior Project/ProjCode/_premade image tests/input_images/1.png")
 
 #function that shows the image
 def display(img, cmap = 'gray'):
@@ -13,14 +13,14 @@ def display(img, cmap = 'gray'):
     ax = fig.add_subplot(111)
     ax.imshow(img,cmap = 'gray')
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    cv2.imwrite("D:/andys/Documents/Kean University/4 Spring 2021/Senior Project/ProjCode/RESTART/UPDATE_20210325_113555.jpg",img)
+    cv2.imwrite("D:/andys/Documents/Kean University/4 Spring 2021/Senior Project/ProjCode/RESTART/_EXAMPLE_INPUTS/UPDATE_1.png",img)
 
 #need to change color of picture from BGR to RGB
 plate = cv2.cvtColor(plate, cv2.COLOR_BGR2RGB)
 display(plate)
 
 #Cascade Classifier where our hundres of samples of license plates are
-plate_cascade = cv2.CascadeClassifier('C:/Users/andys/AppData/Local/Programs/Python/Python38-32/Lib/site-packages/cv2/data/haarcascade_russian_plate_number.xml')
+plate_cascade = cv2.CascadeClassifier('C:/Users/andys/AppData/Local/Programs/Python/Python38-32/Lib/site-packages/cv2/data/haarcascade_number_plate.xml')
 
 
 def detect_plate(img):
@@ -35,10 +35,6 @@ def detect_plate(img):
         cv2.rectangle(plate_img, (x,y), (x+w, y+h), (255,0,0), 5)
 
     return plate_img
-
-result = detect_plate(plate)
-display(result)
-
 
 #detects the plate and zooms in on it
 def detect_zoom_plate(img, kernel):
@@ -109,14 +105,43 @@ def detect_blur(img):
             cv2.rectangle(plate_img, (x,y), (x+w, y+h), (255,0,0), 5)
         
     return plate_img
-    
+
+def find_plate_rectangle(img):
+    # print('find_plate_rectangle()')
+    # This function finds plate in the image.
+    # The idea is to find a rectangle within the image
+
+    contours, method = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+
+    contours = [c for c in contours
+                if cv2.contourArea(c) > img.size * SML_CTR_MIN_RATIO
+                and cv2.contourArea(c) < img.size * SML_CTR_MAX_RATIO]
+    ret = []
+    for c in contours:
+        peri = cv2.arcLength(c, True)
+        ## 0.02 is epsilon
+        approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+        if len(approx) == 4:
+            x, y, w, h = cv2.boundingRect(approx)
+            area = cv2.contourArea(c)
+            rect_area = w * h
+            extent = float(area) / rect_area
+            aspect_ratio = float(w) / h
+            if extent > CTR_MIN_EXTENT_RATIO and aspect_ratio < PLATE_MAX_ASPECT_RATIO:
+                ret.append(approx)
+    return ret
+
 #matrix needed to sharpen the image
 kernel = np.array([[-1,-1,-1],
                    [-1,9,-1],
                    [-1,-1,-1]])
-    
-result = detect_zoom_plate(plate, kernel)
+
+result = find_plate_rectangle(plate)
+result = cv2.rectangle(plate, (x, y), (x + w, y + h), (0, 255, 0), 2)
 display(result)
+
+# result = detect_zoom_plate(plate, kernel)
+# display(result)
 
 # result = detect_blur(plate)
 # display(result)
