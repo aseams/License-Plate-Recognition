@@ -24,6 +24,8 @@ _FAILED_TESTS/
 cropped_vehicle/
 .vscode/
 Presentation/
+Final/backup
+Final/__pycache__
 
 # =========================
 # Operating System Files
