@@ -1,40 +1,28 @@
 # License Plate Observation System
+##### Full Name: License Plate Observation System for Examining Rogue Speeders
+<div align="center">
+    [![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)&emsp;
+    [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)&emsp;
+    [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+</div>
+Using prerecorded videos or images as input, this system is able to display/overlay the license plate value of a vehicle as well as the make and model. This information can then be optionally stored in a database for later review.
 
-> Are you a law enforcement officer? Maybe you're a citizen who just likes to have a dashcam running in your vehicle? This system is for you. Using as little processing power as possible, I've created a system which can detect license plates through images or videos.
+* [Installation](#installation)
+* [Usage](#usage)
 
-<details open="open">
-  <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#dependencies">Dependencies</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
-  </ol>
-</details>
+## Installation
 
-<h2>About the Project</h2>
-<p id="about-the-project">This project was inspired by my daily observations while driving for a produce delivery company. There are many drivers on the road today, and the majority do not respect the box trucks around them. This project is my answer to this disrespect. Deployment on a Raspberry Pi is simple, lightweight, and fast. </p>
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install LPR.
 
-<h3 id="dependencies">Built Using...</h3>
-<ul>
-  <li>OpenCV 2
-  <li>NumPy
-  <li>Pillow
-  <li>PyOCR
-</ul>
+```bash
+pip install -r requirements.txt
+```
 
-<h3 id="getting-started">Getting Started</h3>
+## Usage
+
+```bash
+python LPR.py
+```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
