@@ -20,27 +20,30 @@ def main():
 	"""
 	Main function. Calls other functions/files. 
 	"""
-
 	blnKNNTrainingSuccessful = FindChars.loadKNNDataAndTrainKNN()         # attempt KNN training
 
 	if blnKNNTrainingSuccessful == False:                               # if KNN training was not successful
 		print("\nerror: KNN traning was not successful\n")  # show error message
 		return                                                          # and exit program
 	# end if
-	if not os.path.exists("./LPR_Output"):
-		os.mkdir("./LPR_Output")
+	doubleCheck.ensure_dir("./LPR_Output")
+	with open("API_KEY.txt", "r") as file:
+    	constants.API_KEY = file.read()
 
 	root = Tk()
 	root.withdraw()
 	selected_folder = filedialog.askdirectory()
-	
-
+	print('\nSelected: ' + selected_folder + "\n")
 	extensions = ['.jpg', '.png', '.jpeg']
 	images = [x for x in Path(selected_folder).iterdir() if x.suffix.lower() in extensions]
 	for img in images:
 		head, tail = os.path.split(str(img))
-		#originalImage  = cv2.imread("LicPlateImages/1.png")               # open image
-		originalImage = cv2.imread("LicPlateImages/" + tail)
+		#originalImage = cv2.imread("LicPlateImages/" + tail)
+		# if originalImage is None:                            # if image was not read successfully
+		# print(str(img))
+		# print('head: ' + head)
+		# print('tail: ' + tail)
+		originalImage = cv2.imread(str(img))
 		if originalImage is None:                            # if image was not read successfully
 			print("\nerror: image not read from file \n\n")  # print error message to std out
 			os.system("pause")                                  # pause so user can see error message
@@ -56,13 +59,13 @@ def main():
 
 		if len(plateList) == 0:                          # if no plates were found
 			print("\nno license plates were detected\n")  # inform user no plates were found
-		else:                                                       # else
-					# if we get in here list of possible plates has at leat one plate
+		else:
+			# if we get in here list of possible plates has at leat one plate
 
-					# sort the list of possible plates in DESCENDING order (most number of chars to least number of chars)
+			# sort the list of possible plates in DESCENDING order (most number of chars to least number of chars)
 			plateList.sort(key = lambda possiblePlate: len(possiblePlate.strChars), reverse = True)
 
-					# suppose the plate with the most recognized chars (the first plate in sorted by string length descending order) is the actual plate
+			# suppose the plate with the most recognized chars (the first plate in sorted by string length descending order) is the actual plate
 			truePlate = plateList[0]
 
 			cv2.imshow("imgPlate", truePlate.imgPlate)           # show crop of plate and threshold of plate
@@ -73,26 +76,26 @@ def main():
 			if len(truePlate.strChars) == 0:                     # if no chars were found in the plate
 				print("\nno characters were detected\n\n")  # show message
 				return                                          # and exit program
-			# end if
+		# end if
 
 			drawRedRectangleAroundPlate(originalImage, truePlate)             # draw red rectangle around plate
 
-			print("\nlicense plate read from image = " + truePlate.strChars + "\n")  # write license plate text to std out
 			print("----------------------------------------")
+			print("\nlicense plate read from image = " + truePlate.strChars + "\n")  # write license plate text to std out
 
 			writeLicensePlateCharsOnImage(originalImage, truePlate)           # write license plate text on the image
 
 			cv2.imshow("originalImage", originalImage)                # re-show scene image
-			outputFilename = truePlate.strChars.lower()
-			outputPath = "./LPR_Output/" + outputFilename + ".png"
+			outputFilename = (truePlate.strChars.lower() + ".png")
+			outputPath = ("./LPR_Output/" + outputFilename)
 			cv2.imwrite(outputPath, originalImage)           # write image out to file
 
 		# end if else
 
-		cv2.waitKey(0)					# hold windows open until user presses a key
-		
-		doublecheck.confirmDB(state, plate)
+		#cv2.waitKey(0)					# hold windows open until user presses a key
+		doubleCheck.confirmDB(truePlate.strChars.lower())
 
+	database.close()
 	return
 
 ###################################################################################################

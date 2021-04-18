@@ -19,13 +19,12 @@ $RECYCLE.BIN/
 *.lnk
 
 # Directories
-_EXAMPLE_INPUTS/
-_FAILED_TESTS/
-cropped_vehicle/
-.vscode/
 Presentation/
-Final/backup
-Final/__pycache__
+__pycache__/
+
+# Files
+API_KEY.txt
+
 
 # =========================
 # Operating System Files

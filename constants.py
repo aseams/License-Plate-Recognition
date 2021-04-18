@@ -64,5 +64,5 @@ state_names = ["Alaska", "Alabama", "Arkansas", "American Samoa",
 				"Virgin Islands", "Vermont", "Washington", "Wisconsin", 
 				"West Virginia", "Wyoming"]
 
-API_KEY = "2b9aae527888957"
+API_KEY = ""
 

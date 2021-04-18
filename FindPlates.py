@@ -153,9 +153,9 @@ def findPossibleCharsInScene(imgThresh):
 
 		possibleChar = PossibleChar.PossibleChar(contours[i])
 
-		if FindChars.checkIfPossibleChar(possibleChar):                   # if contour is a possible char, note this does not compare to other chars (yet) . . .
-			intCountOfPossibleChars = intCountOfPossibleChars + 1           # increment count of possible chars
-			listOfPossibleChars.append(possibleChar)                        # and add to list of possible chars
+		if FindChars.checkIfPossibleChar(possibleChar):              # if contour is a possible char, note this does not compare to other chars (yet)...
+			intCountOfPossibleChars = intCountOfPossibleChars + 1    # increment count of possible chars
+			listOfPossibleChars.append(possibleChar)                 # and add to list of possible chars
 		# end if
 	# end for
 
