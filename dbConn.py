@@ -1,3 +1,4 @@
+"""Parameters for use with database.py"""
 host="localhost"
 user="root"
 passwd=""

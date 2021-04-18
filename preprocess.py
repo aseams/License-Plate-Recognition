@@ -7,7 +7,7 @@ import constants
 def preprocess(imgOriginal):
 	"""
 	Contains all preprocessing functionality. Converts input to grayscale -> max contrast -> blur with zeros -> gaussian blur -> threshold
-	returns grayscale and threshold images
+	Returns grayscale and threshold images
 	"""
 	imgGrayscale = extractValue(imgOriginal)
 

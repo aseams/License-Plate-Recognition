@@ -1,22 +1,20 @@
-"""TestLPR.py"""
-
-# colors for use with LPR_Final.py
+"""colors for use with LPR_Final.py"""
 SCALAR_BLACK = (0.0, 0.0, 0.0)
 SCALAR_WHITE = (255.0, 255.0, 255.0)
 SCALAR_YELLOW = (0.0, 255.0, 255.0)
 SCALAR_GREEN = (0.0, 255.0, 0.0)
 SCALAR_RED = (0.0, 0.0, 255.0)
 
-# constants for preprocessing.py
+"""constants for preprocessing.py"""
 GAUSSIAN_SMOOTH_FILTER_SIZE = (5, 5)
 ADAPTIVE_THRESH_BLOCK_SIZE = 19
 ADAPTIVE_THRESH_WEIGHT = 9
 
-# constants for findPlates.py
+"""constants for findPlates.py"""
 PLATE_WIDTH_PADDING_FACTOR = 1.3
 PLATE_HEIGHT_PADDING_FACTOR = 1.5
 
-# constants for use with checkIfPossibleChar, this checks one possible char only (does not compare to another char)
+"""constants for use with checkIfPossibleChar, this checks one possible char only (does not compare to another char)"""
 MIN_PIXEL_WIDTH = 2
 MIN_PIXEL_HEIGHT = 8
 
@@ -25,7 +23,7 @@ MAX_ASPECT_RATIO = 1.0
 
 MIN_PIXEL_AREA = 80
 
-# constants for comparing two chars
+"""constants for comparing two chars"""
 MIN_DIAG_SIZE_MULTIPLE_AWAY = 0.3
 MAX_DIAG_SIZE_MULTIPLE_AWAY = 5.0
 
@@ -36,7 +34,7 @@ MAX_CHANGE_IN_HEIGHT = 0.2
 
 MAX_ANGLE_BETWEEN_CHARS = 12.0
 
-# other constants
+"""other constants"""
 MIN_NUMBER_OF_MATCHING_CHARS = 3
 
 RESIZED_CHAR_IMAGE_WIDTH = 20
@@ -64,5 +62,5 @@ state_names = ["Alaska", "Alabama", "Arkansas", "American Samoa",
 				"Virgin Islands", "Vermont", "Washington", "Wisconsin", 
 				"West Virginia", "Wyoming"]
 
+"""Assigned at start of LPR_Final.py"""
 API_KEY = ""
-

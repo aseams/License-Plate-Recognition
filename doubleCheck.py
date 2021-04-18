@@ -8,12 +8,19 @@ import constants
 import database
 
 def ensure_dir(file_path):
+	"""
+	Makes sure there is a place to output files.
+	"""
 	directory = os.path.realpath(file_path)
 	if not os.path.exists(directory):
 		print('Creating directory: ' + os.path.basename(directory))
 		os.makedirs(directory)
 
 def confirmDB(origPlate):
+	"""
+	Allows user to add/skip a certain vehicle record.
+	Also allows adding comments.
+	"""
 	yes = {"yes": True, "y": True, "ye": True}
 	no = {"no": False, "n": False}
 	retry = ["r", "retry", "re", "try"]
@@ -39,6 +46,8 @@ def confirmDB(origPlate):
 
 def getOCR(filename):
 	"""
+	Credit: Zaargh | Github
+
 	OCR.space API request with local file.
 	:param filename: Your file path & name.
 	:param overlay: Is OCR.space overlay required in your response.
@@ -66,11 +75,7 @@ def getOCR(filename):
 						  data=payload,
 						  )
 	print("Received API response")
-	# jason = json.dumps(r.json(),indent = 2, sort_keys = True)
-	# jason = json.loads(jason)
 	jason = r.json()
-	#print('jason\n' + jason)
-	#print('jason\n\n' + jason + '\n\n')
 	print(type(jason))
 	print(json.dumps(r.json(), indent = 4))
 	parsedText = jason['ParsedResults'][0]['ParsedText']
@@ -82,43 +87,36 @@ def getOCR(filename):
 	return state,plate
 
 def decodeJSON(jason):
+	"""
+	Uses regex to split the parsed text from OCR.space.
+	Then using multiple methods, it attempts
+	to differentiate state from plate from [other].
+	This is done with string length then string matching
+	(check for text in list of states/common issues*)
+	* California and their script typeface:(
+	"""
 	jason = re.split('[\n,.=}]',jason)
 	print('ocr_text_split: ' + str(jason))
-	#jason = [word for word in jason if len(word) in [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]]
-	#print('ocr_text_len: ' + str(jason))
-	# if " " in jason[0]:
-	# 	state = jason[0].strip()
-	# else:
-	# 	state = jason[0]
 
-	# if " " in jason[1]:
-	# 	plate = jason[1].strip()
-	# else:
-	# 	plate = jason[1]
-	# print('ocr_text_final: ' + str(jason))
 	state = stateExists(jason)
 	if state == "error":
 		print("\nState not found/confirmed")
 	for i in jason:
-		if len(i) in [5,6,7]:
+		if len(i) in [4, 5, 6, 7, 8]:
 			plate = i
 	print('state ' + state)
 	print('plate: ' + plate)
 	return state, plate
-	# if confirmDB(state, plate):
-	# 	print("Adding " + state + ":" + plate + " to database")
-	# else:
-	# 	print("Skipped adding " + state + ":" + plate + " to database.")
-	# print("Plate is: {0}".format(jason.split("\n")[4]))
-	# print("Plate is: {}".format(jason.split("; |, |\n")[4]))
-
-
 	#print("Full Text:\n" + json_dict['ParsedResults'][0]['ParsedText'])
 	#print("Top Line: " + json_dict['ParsedResults'][0]['TextOverlay']['Lines'][0]['LineText'])
 	#print("Middle Line: " + json_dict['ParsedResults'][0]['TextOverlay']['Lines'][1]['LineText'])
 	#print("Bottom Line: " + json_dict['ParsedResults'][0]['TextOverlay']['Lines'][2]['LineText'])
 
 def stateExists(state):
+	"""
+	Confirms whether a string is a state or not.
+	Uses full name, abbreviation, and common errors.
+	"""
 	state_names = ["Alaska", "Alabama", "Arkansas", "American Samoa", 
 				   "Arizona", "California", "Colorado", "Connecticut", 
 				   "District of Columbia", "Delaware", "Florida", 

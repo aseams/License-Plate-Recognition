@@ -2,7 +2,9 @@ import cv2
 import numpy as np
 import math
 
-###################################################################################################
+"""
+Holds all variables for each possible character
+"""
 class PossibleChar:
 
 	# constructor #################################################################################

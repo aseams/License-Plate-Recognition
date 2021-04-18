@@ -327,7 +327,7 @@ def findListOfMatchingChars(possibleChar, listOfChars):
 ###################################################################################################
 def distanceBetweenChars(firstChar, secondChar):
 	"""
-	use Pythagorean theorem to calculate distance between two chars
+	Use Pythagorean theorem to calculate distance between two chars
 	"""
 	intX = abs(firstChar.intCenterX - secondChar.intCenterX)
 	intY = abs(firstChar.intCenterY - secondChar.intCenterY)
@@ -338,7 +338,7 @@ def distanceBetweenChars(firstChar, secondChar):
 ###################################################################################################
 def angleBetweenChars(firstChar, secondChar):
 	"""
-	use basic trigonometry (SOH CAH TOA) to calculate angle between chars
+	Use basic trigonometry (SOH CAH TOA) to calculate angle between chars
 	"""
 	fltAdj = float(abs(firstChar.intCenterX - secondChar.intCenterX))
 	fltOpp = float(abs(firstChar.intCenterY - secondChar.intCenterY))

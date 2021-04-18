@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
 
-###################################################################################################
+"""
+Holds all variables for each possible plate
+"""
 class PossiblePlate:
 
 	# constructor #################################################################################

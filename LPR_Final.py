@@ -38,11 +38,6 @@ def main():
 	images = [x for x in Path(selected_folder).iterdir() if x.suffix.lower() in extensions]
 	for img in images:
 		head, tail = os.path.split(str(img))
-		#originalImage = cv2.imread("LicPlateImages/" + tail)
-		# if originalImage is None:                            # if image was not read successfully
-		# print(str(img))
-		# print('head: ' + head)
-		# print('tail: ' + tail)
 		originalImage = cv2.imread(str(img))
 		if originalImage is None:                            # if image was not read successfully
 			print("\nerror: image not read from file \n\n")  # print error message to std out
