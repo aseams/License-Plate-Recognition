@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>doubleCheck &#8212; L.O.S.E.R.S 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for doubleCheck</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">constants</span>
+<span class="kn">import</span> <span class="nn">database</span>
+
+<div class="viewcode-block" id="ensure_dir"><a class="viewcode-back" href="../index.html#doubleCheck.ensure_dir">[docs]</a><span class="k">def</span> <span class="nf">ensure_dir</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Makes sure there is a place to output files.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Creating directory: &#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">directory</span><span class="p">))</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="confirmDB"><a class="viewcode-back" href="../index.html#doubleCheck.confirmDB">[docs]</a><span class="k">def</span> <span class="nf">confirmDB</span><span class="p">(</span><span class="n">origPlate</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Allows user to add/skip a certain vehicle record.</span>
+<span class="sd">	Also allows adding comments.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">yes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;ye&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+	<span class="n">no</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+	<span class="n">retry</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;retry&quot;</span><span class="p">,</span> <span class="s2">&quot;re&quot;</span><span class="p">,</span> <span class="s2">&quot;try&quot;</span><span class="p">]</span>
+	<span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot; [y/n/retry] &quot;</span>
+	
+	<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Add &quot;</span> <span class="o">+</span> <span class="n">origPlate</span> <span class="o">+</span> <span class="s2">&quot; to database? &quot;</span> <span class="o">+</span> <span class="n">prompt</span><span class="p">)</span>
+		<span class="n">choice</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+		<span class="k">if</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">yes</span><span class="p">:</span>
+			<span class="n">comment</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Please type any comments now. If you do not want to add a comment, simply press [ENTER].&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+			<span class="n">database</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">origPlate</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span>
+			<span class="k">break</span>
+		<span class="k">elif</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">no</span><span class="p">:</span>
+			<span class="k">break</span>
+		<span class="k">elif</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">retry</span><span class="p">:</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Retrying OCR...&quot;</span><span class="p">)</span>
+			<span class="n">file</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;./LPR_Output/&quot;</span> <span class="o">+</span> <span class="n">origPlate</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+			<span class="n">state</span><span class="p">,</span> <span class="n">plate</span> <span class="o">=</span> <span class="n">getOCR</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please respond with &#39;yes&#39;, &#39;no&#39;, or &#39;retry&#39;</span><span class="se">\</span>
+<span class="s2">										(&#39;y&#39;, &#39;n&#39;, or &#39;r&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="getOCR"><a class="viewcode-back" href="../index.html#doubleCheck.getOCR">[docs]</a><span class="k">def</span> <span class="nf">getOCR</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Credit: Zaargh | Github</span>
+<span class="sd">	OCR.space API request with local file.</span>
+
+<span class="sd">	:filename: Your file path &amp; name.</span>
+<span class="sd">	:overlay: Do you need an overlay in the response. Default [F].</span>
+<span class="sd">	:api_key: OCR.space API key. Defaults to [helloworld].</span>
+<span class="sd">	:language: Language code to be used in OCR. Default [eng].</span>
+<span class="sd">	:return: Result in JSON format.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">overlay</span> <span class="o">=</span> <span class="kc">False</span>
+	<span class="n">api_key</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">API_KEY</span>
+	<span class="n">language</span> <span class="o">=</span> <span class="s1">&#39;eng&#39;</span>
+	<span class="n">OCREngine</span> <span class="o">=</span> <span class="mi">2</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sent to API&quot;</span><span class="p">)</span>
+	<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;isOverlayRequired&#39;</span><span class="p">:</span> <span class="n">overlay</span><span class="p">,</span>
+			   <span class="s1">&#39;apikey&#39;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">,</span>
+			   <span class="s1">&#39;language&#39;</span><span class="p">:</span> <span class="n">language</span><span class="p">,</span>
+			   <span class="s1">&#39;OCREngine&#39;</span><span class="p">:</span> <span class="n">OCREngine</span>
+			   <span class="p">}</span>
+	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;https://api.ocr.space/parse/image&#39;</span><span class="p">,</span>
+						  <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="n">filename</span><span class="p">:</span> <span class="n">f</span><span class="p">},</span>
+						  <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+						  <span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Received API response&quot;</span><span class="p">)</span>
+	<span class="n">jason</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+	<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">jason</span><span class="p">))</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">4</span><span class="p">))</span>
+	<span class="n">parsedText</span> <span class="o">=</span> <span class="n">jason</span><span class="p">[</span><span class="s1">&#39;ParsedResults&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ParsedText&#39;</span><span class="p">]</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Parsed Text:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">parsedText</span><span class="p">)</span>
+	<span class="n">top</span> <span class="o">=</span> <span class="n">jason</span><span class="p">[</span><span class="s1">&#39;ParsedResults&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ParsedText&#39;</span><span class="p">]</span>
+	<span class="n">middle</span> <span class="o">=</span> <span class="n">jason</span><span class="p">[</span><span class="s1">&#39;ParsedResults&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ParsedText&#39;</span><span class="p">]</span>
+	<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">parsedText</span><span class="p">))</span>
+	<span class="n">state</span><span class="p">,</span> <span class="n">plate</span> <span class="o">=</span> <span class="n">decodeJSON</span><span class="p">(</span><span class="n">parsedText</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">state</span><span class="p">,</span><span class="n">plate</span></div>
+
+<div class="viewcode-block" id="decodeJSON"><a class="viewcode-back" href="../index.html#doubleCheck.decodeJSON">[docs]</a><span class="k">def</span> <span class="nf">decodeJSON</span><span class="p">(</span><span class="n">jason</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Uses regex to split the parsed text from OCR.space.</span>
+<span class="sd">	Then using multiple methods, it attempts</span>
+<span class="sd">	to differentiate state from plate from [other].</span>
+<span class="sd">	This is done with string length then string matching</span>
+<span class="sd">	(check for text in list of states/common issues*)</span>
+<span class="sd">	* California and their script typeface:(</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">jason</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[</span><span class="se">\n</span><span class="s1">,.=}]&#39;</span><span class="p">,</span><span class="n">jason</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ocr_text_split: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jason</span><span class="p">))</span>
+
+	<span class="n">state</span> <span class="o">=</span> <span class="n">stateExists</span><span class="p">(</span><span class="n">jason</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">State not found/confirmed&quot;</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">jason</span><span class="p">:</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
+			<span class="n">plate</span> <span class="o">=</span> <span class="n">i</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;state &#39;</span> <span class="o">+</span> <span class="n">state</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;plate: &#39;</span> <span class="o">+</span> <span class="n">plate</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">state</span><span class="p">,</span> <span class="n">plate</span></div>
+	<span class="c1">#print(&quot;Full Text:\n&quot; + json_dict[&#39;ParsedResults&#39;][0][&#39;ParsedText&#39;])</span>
+	<span class="c1">#print(&quot;Top Line: &quot; + json_dict[&#39;ParsedResults&#39;][0][&#39;TextOverlay&#39;][&#39;Lines&#39;][0][&#39;LineText&#39;])</span>
+	<span class="c1">#print(&quot;Middle Line: &quot; + json_dict[&#39;ParsedResults&#39;][0][&#39;TextOverlay&#39;][&#39;Lines&#39;][1][&#39;LineText&#39;])</span>
+	<span class="c1">#print(&quot;Bottom Line: &quot; + json_dict[&#39;ParsedResults&#39;][0][&#39;TextOverlay&#39;][&#39;Lines&#39;][2][&#39;LineText&#39;])</span>
+
+<div class="viewcode-block" id="stateExists"><a class="viewcode-back" href="../index.html#doubleCheck.stateExists">[docs]</a><span class="k">def</span> <span class="nf">stateExists</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Confirms whether a string is a state or not.</span>
+<span class="sd">	Uses full name, abbreviation, and common errors.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">state_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Alaska&quot;</span><span class="p">,</span> <span class="s2">&quot;Alabama&quot;</span><span class="p">,</span> <span class="s2">&quot;Arkansas&quot;</span><span class="p">,</span> <span class="s2">&quot;American Samoa&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Arizona&quot;</span><span class="p">,</span> <span class="s2">&quot;California&quot;</span><span class="p">,</span> <span class="s2">&quot;Colorado&quot;</span><span class="p">,</span> <span class="s2">&quot;Connecticut&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;District of Columbia&quot;</span><span class="p">,</span> <span class="s2">&quot;Delaware&quot;</span><span class="p">,</span> <span class="s2">&quot;Florida&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Georgia&quot;</span><span class="p">,</span> <span class="s2">&quot;Guam&quot;</span><span class="p">,</span> <span class="s2">&quot;Hawaii&quot;</span><span class="p">,</span> <span class="s2">&quot;Iowa&quot;</span><span class="p">,</span> <span class="s2">&quot;Idaho&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Illinois&quot;</span><span class="p">,</span> <span class="s2">&quot;Indiana&quot;</span><span class="p">,</span> <span class="s2">&quot;Kansas&quot;</span><span class="p">,</span> <span class="s2">&quot;Kentucky&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Louisiana&quot;</span><span class="p">,</span> <span class="s2">&quot;Massachusetts&quot;</span><span class="p">,</span> <span class="s2">&quot;Maryland&quot;</span><span class="p">,</span> <span class="s2">&quot;Maine&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Michigan&quot;</span><span class="p">,</span> <span class="s2">&quot;Minnesota&quot;</span><span class="p">,</span> <span class="s2">&quot;Missouri&quot;</span><span class="p">,</span> <span class="s2">&quot;Mississippi&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Montana&quot;</span><span class="p">,</span> <span class="s2">&quot;North Carolina&quot;</span><span class="p">,</span> <span class="s2">&quot;North Dakota&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Nebraska&quot;</span><span class="p">,</span> <span class="s2">&quot;New Hampshire&quot;</span><span class="p">,</span> <span class="s2">&quot;New Jersey&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;New Mexico&quot;</span><span class="p">,</span> <span class="s2">&quot;Nevada&quot;</span><span class="p">,</span> <span class="s2">&quot;New York&quot;</span><span class="p">,</span> <span class="s2">&quot;Ohio&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Oklahoma&quot;</span><span class="p">,</span> <span class="s2">&quot;Oregon&quot;</span><span class="p">,</span> <span class="s2">&quot;Pennsylvania&quot;</span><span class="p">,</span> <span class="s2">&quot;Puerto Rico&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Rhode Island&quot;</span><span class="p">,</span> <span class="s2">&quot;South Carolina&quot;</span><span class="p">,</span> <span class="s2">&quot;South Dakota&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Tennessee&quot;</span><span class="p">,</span> <span class="s2">&quot;Texas&quot;</span><span class="p">,</span> <span class="s2">&quot;Utah&quot;</span><span class="p">,</span> <span class="s2">&quot;Virginia&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;Virgin Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Vermont&quot;</span><span class="p">,</span> <span class="s2">&quot;Washington&quot;</span><span class="p">,</span> <span class="s2">&quot;Wisconsin&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;West Virginia&quot;</span><span class="p">,</span> <span class="s2">&quot;Wyoming&quot;</span><span class="p">]</span>
+
+	<span class="n">common_issues</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Alaska&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Alabama&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Arkansas&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;American Samoa&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Arizona&quot;</span><span class="p">,</span> <span class="s2">&quot;IN Cn bijouvia&quot;</span><span class="p">:</span><span class="s2">&quot;California&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Colorado&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Connecticut&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;District of Columbia&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Delaware&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Florida&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Georgia&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Guam&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Hawaii&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Iowa&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Idaho&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Illinois&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Indiana&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Kansas&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Kentucky&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Louisiana&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Massachusetts&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Maryland&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Maine&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Michigan&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Minnesota&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Missouri&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Mississippi&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Montana&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;North Carolina&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;North Dakota&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Nebraska&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;New Hampshire&quot;</span><span class="p">,</span> <span class="s2">&quot;Garden State&quot;</span><span class="p">:</span><span class="s2">&quot;New Jersey&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;New Mexico&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Nevada&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;New York&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Ohio&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Oklahoma&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Oregon&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Pennsylvania&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Puerto Rico&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Rhode Island&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;South Carolina&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;South Dakota&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Tennessee&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Texas&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Utah&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Virginia&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Virgin Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Vermont&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Washington&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Wisconsin&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;West Virginia&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">:</span><span class="s2">&quot;Wyoming&quot;</span><span class="p">}</span>
+
+	<span class="n">state_abrv</span>  <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AL&quot;</span><span class="p">,</span> <span class="s2">&quot;AK&quot;</span><span class="p">,</span> <span class="s2">&quot;AZ&quot;</span><span class="p">,</span> <span class="s2">&quot;AR&quot;</span><span class="p">,</span> <span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;CO&quot;</span><span class="p">,</span> <span class="s2">&quot;CT&quot;</span><span class="p">,</span> <span class="s2">&quot;DC&quot;</span><span class="p">,</span> <span class="s2">&quot;DE&quot;</span><span class="p">,</span>
+				   <span class="s2">&quot;FL&quot;</span><span class="p">,</span> <span class="s2">&quot;GA&quot;</span><span class="p">,</span> <span class="s2">&quot;HI&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;IL&quot;</span><span class="p">,</span> <span class="s2">&quot;IN&quot;</span><span class="p">,</span> <span class="s2">&quot;IA&quot;</span><span class="p">,</span> <span class="s2">&quot;KS&quot;</span><span class="p">,</span> <span class="s2">&quot;KY&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;LA&quot;</span><span class="p">,</span> <span class="s2">&quot;ME&quot;</span><span class="p">,</span> <span class="s2">&quot;MD&quot;</span><span class="p">,</span> <span class="s2">&quot;MA&quot;</span><span class="p">,</span> <span class="s2">&quot;MI&quot;</span><span class="p">,</span> <span class="s2">&quot;MN&quot;</span><span class="p">,</span> <span class="s2">&quot;MS&quot;</span><span class="p">,</span> <span class="s2">&quot;MO&quot;</span><span class="p">,</span> <span class="s2">&quot;MT&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;NE&quot;</span><span class="p">,</span> <span class="s2">&quot;NV&quot;</span><span class="p">,</span> <span class="s2">&quot;NH&quot;</span><span class="p">,</span> <span class="s2">&quot;NJ&quot;</span><span class="p">,</span> <span class="s2">&quot;NM&quot;</span><span class="p">,</span> <span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="s2">&quot;NC&quot;</span><span class="p">,</span> <span class="s2">&quot;ND&quot;</span><span class="p">,</span> <span class="s2">&quot;OH&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;OR&quot;</span><span class="p">,</span> <span class="s2">&quot;PA&quot;</span><span class="p">,</span> <span class="s2">&quot;RI&quot;</span><span class="p">,</span> <span class="s2">&quot;SC&quot;</span><span class="p">,</span> <span class="s2">&quot;SD&quot;</span><span class="p">,</span> <span class="s2">&quot;TN&quot;</span><span class="p">,</span> <span class="s2">&quot;TX&quot;</span><span class="p">,</span> <span class="s2">&quot;UT&quot;</span><span class="p">,</span> 
+				   <span class="s2">&quot;VT&quot;</span><span class="p">,</span> <span class="s2">&quot;VA&quot;</span><span class="p">,</span> <span class="s2">&quot;WA&quot;</span><span class="p">,</span> <span class="s2">&quot;WV&quot;</span><span class="p">,</span> <span class="s2">&quot;WI&quot;</span><span class="p">,</span> <span class="s2">&quot;WY&quot;</span><span class="p">]</span>
+
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+		<span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state_names</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">i</span>
+		<span class="k">elif</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state_abrv</span><span class="p">:</span>
+			<span class="n">idx</span> <span class="o">=</span> <span class="n">state_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+			<span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">state_names</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+		<span class="k">elif</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">common_issues</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+			<span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">common_issues</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span> <span class="s2">&quot;error&quot;</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">L.O.S.E.R.S</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Andrew Seamon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

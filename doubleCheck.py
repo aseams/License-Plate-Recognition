@@ -47,16 +47,12 @@ def confirmDB(origPlate):
 def getOCR(filename):
 	"""
 	Credit: Zaargh | Github
-
 	OCR.space API request with local file.
-	:param filename: Your file path & name.
-	:param overlay: Is OCR.space overlay required in your response.
-					Defaults to False.
-	:param api_key: OCR.space API key.
-					Defaults to 'helloworld'.
-	:param language: Language code to be used in OCR.
-					List of available language codes can be found on https://ocr.space/OCRAPI
-					Defaults to 'en'.
+
+	:filename: Your file path & name.
+	:overlay: Do you need an overlay in the response. Default [F].
+	:api_key: OCR.space API key. Defaults to [helloworld].
+	:language: Language code to be used in OCR. Default [eng].
 	:return: Result in JSON format.
 	"""
 	overlay = False

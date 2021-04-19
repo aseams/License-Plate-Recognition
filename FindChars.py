@@ -12,7 +12,6 @@ import constants
 
 kNearest = cv2.ml.KNearest_create()
 
-###################################################################################################
 def loadKNNDataAndTrainKNN():
 	"""
 	Loads and runs KNN training to ensure best results
@@ -43,7 +42,6 @@ def loadKNNDataAndTrainKNN():
 	return True                             # if we got here training was successful so return true
 # end function
 
-###################################################################################################
 def detectCharsInPlates(plateList):
 	"""
 	Used to detect any possible characters within the image. Then throws out characters not found inside of a rectangle.
@@ -62,7 +60,7 @@ def detectCharsInPlates(plateList):
 
 		possiblePlate.imgGrayscale, possiblePlate.imgThresh = preprocess.preprocess(possiblePlate.imgPlate)     # preprocess to get grayscale and threshold images
 
-		if LPR_Final.showSteps == True: # show steps ###################################################
+		if LPR_Final.showSteps == True: # show steps
 			cv2.imshow("5a", possiblePlate.imgPlate)
 			cv2.imshow("5b", possiblePlate.imgGrayscale)
 			cv2.imshow("5c", possiblePlate.imgThresh)
@@ -70,7 +68,7 @@ def detectCharsInPlates(plateList):
 			cv2.imwrite("./LPR_Output/FindChars_5a.png", possiblePlate.imgPlate)
 			cv2.imwrite("./LPR_Output/FindChars_5b.png", possiblePlate.imgGrayscale)
 			cv2.imwrite("./LPR_Output/FindChars_5c.png", possiblePlate.imgThresh)
-		# end if # show steps #####################################################################
+		# end if # show steps
 
 				# increase size of plate image for easier viewing and char detection
 		possiblePlate.imgThresh = cv2.resize(possiblePlate.imgThresh, (0, 0), fx = 1.6, fy = 1.6)
@@ -78,16 +76,16 @@ def detectCharsInPlates(plateList):
 				# threshold again to eliminate any gray areas
 		thresholdValue, possiblePlate.imgThresh = cv2.threshold(possiblePlate.imgThresh, 0.0, 255.0, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
-		if LPR_Final.showSteps == True: # show steps ###################################################
+		if LPR_Final.showSteps == True: # show steps
 			cv2.imshow("5d", possiblePlate.imgThresh)
 			cv2.imwrite("./LPR_Output/FindChars_5d.png", possiblePlate.imgThresh)
-		# end if # show steps #####################################################################
+		# end if # show steps
 
 				# find all possible chars in the plate,
 				# this function first finds all contours, then only includes contours that could be chars (without comparison to other chars yet)
 		listOfPossibleCharsInPlate = findPossibleCharsInPlate(possiblePlate.imgGrayscale, possiblePlate.imgThresh)
 
-		if LPR_Final.showSteps == True: # show steps ###################################################
+		if LPR_Final.showSteps == True: # show steps
 			height, width, numChannels = possiblePlate.imgPlate.shape
 			imgContours = np.zeros((height, width, 3), np.uint8)
 			del contours[:]                                         # clear the contours list
@@ -100,12 +98,12 @@ def detectCharsInPlates(plateList):
 
 			cv2.imshow("6", imgContours)
 			cv2.imwrite("./LPR_Output/FindChars_6.png", imgContours)
-		# end if # show steps #####################################################################
+		# end if # show steps
 
 				# given a list of all possible chars, find groups of matching chars within the plate
 		listOfListsOfMatchingCharsInPlate = findListOfListsOfMatchingChars(listOfPossibleCharsInPlate)
 
-		if LPR_Final.showSteps == True: # show steps ###################################################
+		if LPR_Final.showSteps == True: # show steps
 			imgContours = np.zeros((height, width, 3), np.uint8)
 			del contours[:]
 
@@ -121,11 +119,11 @@ def detectCharsInPlates(plateList):
 			# end for
 			cv2.imshow("7", imgContours)
 			cv2.imwrite("./LPR_Output/FindChars_7.png", imgContours)
-		# end if # show steps #####################################################################
+		# end if # show steps #
 
 		if (len(listOfListsOfMatchingCharsInPlate) == 0):			# if no groups of matching chars were found in the plate
 
-			if LPR_Final.showSteps == True: # show steps ###############################################
+			if LPR_Final.showSteps == True: # show steps #
 				print("chars found in plate number " + str(
 					intPlateCounter) + " = (none), click on any image and press a key to continue . . .")
 				intPlateCounter = intPlateCounter + 1
@@ -133,7 +131,7 @@ def detectCharsInPlates(plateList):
 				cv2.destroyWindow("9")
 				cv2.destroyWindow("10")
 				cv2.waitKey(0)
-			# end if # show steps #################################################################
+			# end if # show steps #
 
 			possiblePlate.strChars = ""
 			continue						# go back to top of for loop
@@ -144,7 +142,7 @@ def detectCharsInPlates(plateList):
 			listOfListsOfMatchingCharsInPlate[i] = removeInnerOverlappingChars(listOfListsOfMatchingCharsInPlate[i])              # and remove inner overlapping chars
 		# end for
 
-		if LPR_Final.showSteps == True: # show steps ###################################################
+		if LPR_Final.showSteps == True: # show steps #
 			imgContours = np.zeros((height, width, 3), np.uint8)
 
 			for matchingChars in listOfListsOfMatchingCharsInPlate:
@@ -162,7 +160,7 @@ def detectCharsInPlates(plateList):
 			# end for
 			cv2.imshow("8", imgContours)
 			cv2.imwrite("./LPR_Output/FindChars_8.png", imgContours)
-		# end if # show steps #####################################################################
+		# end if # show steps #
 
 				# within each possible plate, suppose the longest list of potential matching chars is the actual list of chars
 		intLenOfLongestListOfChars = 0
@@ -179,7 +177,7 @@ def detectCharsInPlates(plateList):
 				# suppose that the longest list of matching chars within the plate is the actual list of chars
 		longestListOfMatchingCharsInPlate = listOfListsOfMatchingCharsInPlate[intIndexOfLongestListOfChars]
 
-		if LPR_Final.showSteps == True: # show steps ###################################################
+		if LPR_Final.showSteps == True: # show steps #
 			imgContours = np.zeros((height, width, 3), np.uint8)
 			del contours[:]
 
@@ -191,16 +189,16 @@ def detectCharsInPlates(plateList):
 
 			cv2.imshow("9", imgContours)
 			cv2.imwrite("./LPR_Output/FindChars_9.png", imgContours)
-		# end if # show steps #####################################################################
+		# end if # show steps #
 
 		possiblePlate.strChars = recognizeCharsInPlate(possiblePlate.imgThresh, longestListOfMatchingCharsInPlate)
 
-		if LPR_Final.showSteps == True: # show steps ###################################################
+		if LPR_Final.showSteps == True: # show steps #
 			print("chars found in plate number " + str(
 				intPlateCounter) + " = " + possiblePlate.strChars + ", click on any image and press a key to continue . . .")
 			intPlateCounter = intPlateCounter + 1
 			cv2.waitKey(0)
-		# end if # show steps #####################################################################
+		# end if # show steps #
 
 	# end of big for loop that takes up most of the function
 
@@ -212,7 +210,6 @@ def detectCharsInPlates(plateList):
 	return plateList
 # end function
 
-###################################################################################################
 def findPossibleCharsInPlate(imgGrayscale, imgThresh):
 	"""
 	Locates all possible characters
@@ -235,7 +232,6 @@ def findPossibleCharsInPlate(imgGrayscale, imgThresh):
 	return listOfPossibleChars
 # end function
 
-###################################################################################################
 def checkIfPossibleChar(possibleChar):
 	"""
 	Confirms whether a specific contour might be a character.
@@ -249,7 +245,6 @@ def checkIfPossibleChar(possibleChar):
 	# end if
 # end function
 
-###################################################################################################
 def findListOfListsOfMatchingChars(listOfPossibleChars):
 	"""
 	Using all possible chars in one list, rearrange the chars into a list of lists containing matching char strings.
@@ -288,7 +283,6 @@ def findListOfListsOfMatchingChars(listOfPossibleChars):
 	return listOfListsOfMatchingChars
 # end function
 
-###################################################################################################
 def findListOfMatchingChars(possibleChar, listOfChars):
 	"""
 	Given a possible character and a list of possible characters, find all chars in main list that match, and return a list of matches.
@@ -324,7 +318,6 @@ def findListOfMatchingChars(possibleChar, listOfChars):
 	return matchingChars                  # return result
 # end function
 
-###################################################################################################
 def distanceBetweenChars(firstChar, secondChar):
 	"""
 	Use Pythagorean theorem to calculate distance between two chars
@@ -335,7 +328,6 @@ def distanceBetweenChars(firstChar, secondChar):
 	return math.sqrt((intX ** 2) + (intY ** 2))
 # end function
 
-###################################################################################################
 def angleBetweenChars(firstChar, secondChar):
 	"""
 	Use basic trigonometry (SOH CAH TOA) to calculate angle between chars
@@ -354,12 +346,11 @@ def angleBetweenChars(firstChar, secondChar):
 	return fltAngleInDeg
 # end function
 
-###################################################################################################
 def removeInnerOverlappingChars(matchingChars):
 	"""
 	If multiple chars overlap, remove the inner char. Prevents including same char twice if multiple contours are found for the same physical char.
 	Ex: 'O' has an outer 'O' and an inner 'o'
-		'R' has an outer 'R' and an inner 'D' 
+	'R' has an outer 'R' and an inner 'D' 
 	"""
 	listOfMatchingCharsWithInnerCharRemoved = list(matchingChars)                # this will be the return value
 
@@ -387,7 +378,6 @@ def removeInnerOverlappingChars(matchingChars):
 	return listOfMatchingCharsWithInnerCharRemoved
 # end function
 
-###################################################################################################
 def recognizeCharsInPlate(imgThresh, matchingChars):
 	"""
 	Applies true character recognition
@@ -426,10 +416,10 @@ def recognizeCharsInPlate(imgThresh, matchingChars):
 
 	# end for
 
-	if LPR_Final.showSteps == True: # show steps #######################################################
+	if LPR_Final.showSteps == True: # show steps #
 		cv2.imshow("10", imgThreshColor)
 		cv2.imwrite("./LPR_Output/FindChars_10.png", imgThreshColor)
-	# end if # show steps #########################################################################
+	# end if # show steps #
 
 	return strChars
 # end function

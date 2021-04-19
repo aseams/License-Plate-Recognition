@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>preprocess &#8212; L.O.S.E.R.S 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for preprocess</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">constants</span>
+
+
+<div class="viewcode-block" id="preprocess"><a class="viewcode-back" href="../index.html#preprocess.preprocess">[docs]</a><span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="n">imgOriginal</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Contains all preprocessing functionality. Converts input to grayscale -&gt; max contrast -&gt; blur with zeros -&gt; gaussian blur -&gt; threshold</span>
+<span class="sd">	Returns grayscale and threshold images</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">imgGrayscale</span> <span class="o">=</span> <span class="n">extractValue</span><span class="p">(</span><span class="n">imgOriginal</span><span class="p">)</span>
+
+	<span class="n">imgMaxContrastGrayscale</span> <span class="o">=</span> <span class="n">maximizeContrast</span><span class="p">(</span><span class="n">imgGrayscale</span><span class="p">)</span>
+
+	<span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">imgGrayscale</span><span class="o">.</span><span class="n">shape</span>
+
+	<span class="n">imgBlurred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+	<span class="n">imgBlurred</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="n">imgMaxContrastGrayscale</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">GAUSSIAN_SMOOTH_FILTER_SIZE</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+	<span class="n">imgThresh</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">adaptiveThreshold</span><span class="p">(</span><span class="n">imgBlurred</span><span class="p">,</span> <span class="mf">255.0</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">ADAPTIVE_THRESH_GAUSSIAN_C</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY_INV</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">ADAPTIVE_THRESH_BLOCK_SIZE</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">ADAPTIVE_THRESH_WEIGHT</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">imgThresh</span></div>
+
+
+<div class="viewcode-block" id="extractValue"><a class="viewcode-back" href="../index.html#preprocess.extractValue">[docs]</a><span class="k">def</span> <span class="nf">extractValue</span><span class="p">(</span><span class="n">imgOriginal</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Extracts HSV values from image</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">numChannels</span> <span class="o">=</span> <span class="n">imgOriginal</span><span class="o">.</span><span class="n">shape</span>
+
+	<span class="n">imgHSV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+	<span class="n">imgHSV</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">imgOriginal</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+
+	<span class="n">imgHue</span><span class="p">,</span> <span class="n">imgSaturation</span><span class="p">,</span> <span class="n">imgValue</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">imgHSV</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">imgValue</span></div>
+
+
+<div class="viewcode-block" id="maximizeContrast"><a class="viewcode-back" href="../index.html#preprocess.maximizeContrast">[docs]</a><span class="k">def</span> <span class="nf">maximizeContrast</span><span class="p">(</span><span class="n">imgGrayscale</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Does what it says on the tin. Maximizes contrast of the image.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">imgGrayscale</span><span class="o">.</span><span class="n">shape</span>
+
+	<span class="n">imgTopHat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+	<span class="n">imgBlackHat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+	<span class="n">structuringElement</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getStructuringElement</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_RECT</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+	<span class="n">imgTopHat</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_TOPHAT</span><span class="p">,</span> <span class="n">structuringElement</span><span class="p">)</span>
+	<span class="n">imgBlackHat</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_BLACKHAT</span><span class="p">,</span> <span class="n">structuringElement</span><span class="p">)</span>
+
+	<span class="n">imgGrayscalePlusTopHat</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">imgTopHat</span><span class="p">)</span>
+	<span class="n">imgGrayscalePlusTopHatMinusBlackHat</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">imgGrayscalePlusTopHat</span><span class="p">,</span> <span class="n">imgBlackHat</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">imgGrayscalePlusTopHatMinusBlackHat</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">L.O.S.E.R.S</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Andrew Seamon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

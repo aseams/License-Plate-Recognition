@@ -3,7 +3,7 @@ import numpy as np
 import math
 import constants
 
-###################################################################################################
+
 def preprocess(imgOriginal):
 	"""
 	Contains all preprocessing functionality. Converts input to grayscale -> max contrast -> blur with zeros -> gaussian blur -> threshold
@@ -23,7 +23,7 @@ def preprocess(imgOriginal):
 
 	return imgGrayscale, imgThresh
 
-###################################################################################################
+
 def extractValue(imgOriginal):
 	"""
 	Extracts HSV values from image
@@ -38,7 +38,7 @@ def extractValue(imgOriginal):
 
 	return imgValue
 
-###################################################################################################
+
 def maximizeContrast(imgGrayscale):
 	"""
 	Does what it says on the tin. Maximizes contrast of the image.

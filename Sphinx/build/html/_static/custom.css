@@ -1,0 +1,37 @@
+/* Removes word-break for function variables */
+dl.field-list > dt {
+    font-weight: bold;
+	word-break: normal!important;
+    padding-left: 0!important;
+    padding-right: 5px;
+}
+
+.field-even .field-odd {
+	padding-left:0!important;
+}
+
+/* The sidebar menu */
+div.sphinxsidebarwrapper {
+  position: fixed!important; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px;
+  padding-left: 30px!important;
+}
+
+/* The navigation menu links */
+div.sphinxsidebarwrapper a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  div.sphinxsidebarwrapper {padding-top: 15px;}
+  div.sphinxsidebarwrapper a {font-size: 18px;}
+}

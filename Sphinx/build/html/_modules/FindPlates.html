@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FindPlates &#8212; L.O.S.E.R.S 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for FindPlates</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">LPR_Final</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">preprocess</span>
+<span class="kn">import</span> <span class="nn">FindChars</span>
+<span class="kn">import</span> <span class="nn">PossiblePlate</span>
+<span class="kn">import</span> <span class="nn">PossibleChar</span>
+<span class="kn">import</span> <span class="nn">constants</span>
+
+
+<div class="viewcode-block" id="detectPlatesInScene"><a class="viewcode-back" href="../index.html#FindPlates.detectPlatesInScene">[docs]</a><span class="k">def</span> <span class="nf">detectPlatesInScene</span><span class="p">(</span><span class="n">originalImage</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Finds all possible plates in image by looking for rectangle contours</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">plateList</span> <span class="o">=</span> <span class="p">[]</span>                   <span class="c1"># this will be the return value</span>
+
+	<span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">numChannels</span> <span class="o">=</span> <span class="n">originalImage</span><span class="o">.</span><span class="n">shape</span>
+
+	<span class="n">imgGrayscale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+	<span class="n">imgThresh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+	<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+	<span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">originalImage</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_0.png&quot;</span><span class="p">,</span> <span class="n">originalImage</span><span class="p">)</span>
+	<span class="c1"># end if # show steps #</span>
+
+	<span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">imgThresh</span> <span class="o">=</span> <span class="n">preprocess</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">originalImage</span><span class="p">)</span>         <span class="c1"># preprocess to get grayscale and threshold images</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;1a&quot;</span><span class="p">,</span> <span class="n">imgGrayscale</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;1b&quot;</span><span class="p">,</span> <span class="n">imgThresh</span><span class="p">)</span>
+
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_1a.png&quot;</span><span class="p">,</span> <span class="n">imgGrayscale</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_1b.png&quot;</span><span class="p">,</span> <span class="n">imgThresh</span><span class="p">)</span>
+	<span class="c1"># end if # show steps #</span>
+
+			<span class="c1"># find all possible chars in the scene,</span>
+			<span class="c1"># this function first finds all contours, then only includes contours that could be chars (without comparison to other chars yet)</span>
+	<span class="n">possibleCharList</span> <span class="o">=</span> <span class="n">findPossibleCharsInScene</span><span class="p">(</span><span class="n">imgThresh</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;step 2 - len(possibleCharList) = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+			<span class="nb">len</span><span class="p">(</span><span class="n">possibleCharList</span><span class="p">)))</span>  <span class="c1"># 131 with MCLRNF1 image</span>
+
+		<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+		<span class="n">contours</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">for</span> <span class="n">possibleChar</span> <span class="ow">in</span> <span class="n">possibleCharList</span><span class="p">:</span>
+			<span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">possibleChar</span><span class="o">.</span><span class="n">contour</span><span class="p">)</span>
+		<span class="c1"># end for</span>
+
+		<span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_WHITE</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;2b&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_2b.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+	<span class="c1"># end if # show steps #</span>
+
+			<span class="c1"># given a list of all possible chars, find groups of matching chars</span>
+			<span class="c1"># in the next steps each group of matching chars will attempt to be recognized as a plate</span>
+	<span class="n">allPossibleStrings</span> <span class="o">=</span> <span class="n">FindChars</span><span class="o">.</span><span class="n">findListOfListsOfMatchingChars</span><span class="p">(</span><span class="n">possibleCharList</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;step 3 - allPossibleStrings.Count = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+			<span class="nb">len</span><span class="p">(</span><span class="n">allPossibleStrings</span><span class="p">)))</span>  <span class="c1"># 13 with MCLRNF1 image</span>
+
+		<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+		<span class="k">for</span> <span class="n">matchingChars</span> <span class="ow">in</span> <span class="n">allPossibleStrings</span><span class="p">:</span>
+			<span class="n">intRandomBlue</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+			<span class="n">intRandomGreen</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+			<span class="n">intRandomRed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+
+			<span class="n">contours</span> <span class="o">=</span> <span class="p">[]</span>
+
+			<span class="k">for</span> <span class="n">matchingChar</span> <span class="ow">in</span> <span class="n">matchingChars</span><span class="p">:</span>
+				<span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matchingChar</span><span class="o">.</span><span class="n">contour</span><span class="p">)</span>
+			<span class="c1"># end for</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">intRandomBlue</span><span class="p">,</span> <span class="n">intRandomGreen</span><span class="p">,</span> <span class="n">intRandomRed</span><span class="p">))</span>
+		<span class="c1"># end for</span>
+
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_3.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+	<span class="c1"># end if # show steps #</span>
+
+	<span class="k">for</span> <span class="n">matchingChars</span> <span class="ow">in</span> <span class="n">allPossibleStrings</span><span class="p">:</span>                   <span class="c1"># for each group of matching chars</span>
+		<span class="n">possiblePlate</span> <span class="o">=</span> <span class="n">extractPlate</span><span class="p">(</span><span class="n">originalImage</span><span class="p">,</span> <span class="n">matchingChars</span><span class="p">)</span>         <span class="c1"># attempt to extract plate</span>
+
+		<span class="k">if</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgPlate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>                          <span class="c1"># if plate was found</span>
+			<span class="n">plateList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">possiblePlate</span><span class="p">)</span>                  <span class="c1"># add to list of possible plates</span>
+		<span class="c1"># end if</span>
+	<span class="c1"># end for</span>
+
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">plateList</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; possible plates found&quot;</span><span class="p">)</span>  <span class="c1"># 13 with MCLRNF1 image</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;4a&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_4a.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">plateList</span><span class="p">)):</span>
+			<span class="n">p2fRectPoints</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxPoints</span><span class="p">(</span><span class="n">plateList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">rrLocationOfPlateInScene</span><span class="p">)</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_RED</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_RED</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_RED</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p2fRectPoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_RED</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;4a&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;FindPlate_4a.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;possible plate &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, click on any image and press a key to continue . . .&quot;</span><span class="p">)</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;4b&quot;</span><span class="p">,</span> <span class="n">plateList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">imgPlate</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_4b.png&quot;</span><span class="p">,</span> <span class="n">plateList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">imgPlate</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+		<span class="c1"># end for</span>
+
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">plate detection complete, click on any image and press a key to begin char recognition . . .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="c1"># end if # show steps #</span>
+
+	<span class="k">return</span> <span class="n">plateList</span></div>
+<span class="c1"># end function</span>
+
+
+<div class="viewcode-block" id="findPossibleCharsInScene"><a class="viewcode-back" href="../index.html#FindPlates.findPossibleCharsInScene">[docs]</a><span class="k">def</span> <span class="nf">findPossibleCharsInScene</span><span class="p">(</span><span class="n">imgThresh</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Similar to detectPlatesInScene(originalImage) except that it looks for characters in each rectangle.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">listOfPossibleChars</span> <span class="o">=</span> <span class="p">[]</span>                <span class="c1"># this will be the return value</span>
+
+	<span class="n">intCountOfPossibleChars</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="n">imgThreshCopy</span> <span class="o">=</span> <span class="n">imgThresh</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+	<span class="n">contours</span><span class="p">,</span> <span class="n">npaHierarchy</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="n">imgThreshCopy</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_LIST</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_SIMPLE</span><span class="p">)</span>   <span class="c1"># find all contours</span>
+
+	<span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">imgThresh</span><span class="o">.</span><span class="n">shape</span>
+	<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">)):</span>                       <span class="c1"># for each contour</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_WHITE</span><span class="p">)</span>
+		<span class="c1"># end if # show steps #</span>
+
+		<span class="n">possibleChar</span> <span class="o">=</span> <span class="n">PossibleChar</span><span class="o">.</span><span class="n">PossibleChar</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+		<span class="k">if</span> <span class="n">FindChars</span><span class="o">.</span><span class="n">checkIfPossibleChar</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">):</span>              <span class="c1"># if contour is a possible char, note this does not compare to other chars (yet)...</span>
+			<span class="n">intCountOfPossibleChars</span> <span class="o">=</span> <span class="n">intCountOfPossibleChars</span> <span class="o">+</span> <span class="mi">1</span>    <span class="c1"># increment count of possible chars</span>
+			<span class="n">listOfPossibleChars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">)</span>                 <span class="c1"># and add to list of possible chars</span>
+		<span class="c1"># end if</span>
+	<span class="c1"># end for</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">step 2 - len(contours) = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">)))</span>  <span class="c1"># 2362 with MCLRNF1 image</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;step 2 - intCountOfPossibleChars = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">intCountOfPossibleChars</span><span class="p">))</span>  <span class="c1"># 131 with MCLRNF1 image</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;2a&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindPlate_2a.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+	<span class="c1"># end if # show steps #</span>
+
+	<span class="k">return</span> <span class="n">listOfPossibleChars</span></div>
+<span class="c1"># end function</span>
+
+
+
+<div class="viewcode-block" id="extractPlate"><a class="viewcode-back" href="../index.html#FindPlates.extractPlate">[docs]</a><span class="k">def</span> <span class="nf">extractPlate</span><span class="p">(</span><span class="n">imgOriginal</span><span class="p">,</span> <span class="n">matchingChars</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Extract plate image using contours/bounding box</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">possiblePlate</span> <span class="o">=</span> <span class="n">PossiblePlate</span><span class="o">.</span><span class="n">PossiblePlate</span><span class="p">()</span>           <span class="c1"># this will be the return value</span>
+
+	<span class="n">matchingChars</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">matchingChar</span><span class="p">:</span> <span class="n">matchingChar</span><span class="o">.</span><span class="n">intCenterX</span><span class="p">)</span>        <span class="c1"># sort chars from left to right based on x position</span>
+
+			<span class="c1"># calculate the center point of the plate</span>
+	<span class="n">fltPlateCenterX</span> <span class="o">=</span> <span class="p">(</span><span class="n">matchingChars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intCenterX</span> <span class="o">+</span> <span class="n">matchingChars</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">intCenterX</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+	<span class="n">fltPlateCenterY</span> <span class="o">=</span> <span class="p">(</span><span class="n">matchingChars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intCenterY</span> <span class="o">+</span> <span class="n">matchingChars</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">intCenterY</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+	<span class="n">ptPlateCenter</span> <span class="o">=</span> <span class="n">fltPlateCenterX</span><span class="p">,</span> <span class="n">fltPlateCenterY</span>
+
+			<span class="c1"># calculate plate width and height</span>
+	<span class="n">intPlateWidth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">matchingChars</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">intBoundingRectX</span> <span class="o">+</span> <span class="n">matchingChars</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">intBoundingRectWidth</span> <span class="o">-</span> <span class="n">matchingChars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intBoundingRectX</span><span class="p">)</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLATE_WIDTH_PADDING_FACTOR</span><span class="p">)</span>
+
+	<span class="n">intTotalOfCharHeights</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="k">for</span> <span class="n">matchingChar</span> <span class="ow">in</span> <span class="n">matchingChars</span><span class="p">:</span>
+		<span class="n">intTotalOfCharHeights</span> <span class="o">=</span> <span class="n">intTotalOfCharHeights</span> <span class="o">+</span> <span class="n">matchingChar</span><span class="o">.</span><span class="n">intBoundingRectHeight</span>
+	<span class="c1"># end for</span>
+
+	<span class="n">fltAverageCharHeight</span> <span class="o">=</span> <span class="n">intTotalOfCharHeights</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span>
+
+	<span class="n">intPlateHeight</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fltAverageCharHeight</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLATE_HEIGHT_PADDING_FACTOR</span><span class="p">)</span>
+
+			<span class="c1"># calculate correction angle of plate region</span>
+	<span class="n">fltOpposite</span> <span class="o">=</span> <span class="n">matchingChars</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">intCenterY</span> <span class="o">-</span> <span class="n">matchingChars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intCenterY</span>
+	<span class="n">fltHypotenuse</span> <span class="o">=</span> <span class="n">FindChars</span><span class="o">.</span><span class="n">distanceBetweenChars</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">matchingChars</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+	<span class="n">fltCorrectionAngleInRad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">fltOpposite</span> <span class="o">/</span> <span class="n">fltHypotenuse</span><span class="p">)</span>
+	<span class="n">fltCorrectionAngleInDeg</span> <span class="o">=</span> <span class="n">fltCorrectionAngleInRad</span> <span class="o">*</span> <span class="p">(</span><span class="mf">180.0</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+			<span class="c1"># pack plate region center point, width and height, and correction angle into rotated rect member variable of plate</span>
+	<span class="n">possiblePlate</span><span class="o">.</span><span class="n">rrLocationOfPlateInScene</span> <span class="o">=</span> <span class="p">(</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ptPlateCenter</span><span class="p">),</span> <span class="p">(</span><span class="n">intPlateWidth</span><span class="p">,</span> <span class="n">intPlateHeight</span><span class="p">),</span> <span class="n">fltCorrectionAngleInDeg</span> <span class="p">)</span>
+
+			<span class="c1"># final steps are to perform the actual rotation</span>
+
+			<span class="c1"># get the rotation matrix for our calculated correction angle</span>
+	<span class="n">rotationMatrix</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getRotationMatrix2D</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">ptPlateCenter</span><span class="p">),</span> <span class="n">fltCorrectionAngleInDeg</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+	<span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">numChannels</span> <span class="o">=</span> <span class="n">imgOriginal</span><span class="o">.</span><span class="n">shape</span>      <span class="c1"># unpack original image width and height</span>
+
+	<span class="n">rotatedImage</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">warpAffine</span><span class="p">(</span><span class="n">imgOriginal</span><span class="p">,</span> <span class="n">rotationMatrix</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>       <span class="c1"># rotate the entire image</span>
+
+	<span class="n">croppedImage</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getRectSubPix</span><span class="p">(</span><span class="n">rotatedImage</span><span class="p">,</span> <span class="p">(</span><span class="n">intPlateWidth</span><span class="p">,</span> <span class="n">intPlateHeight</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ptPlateCenter</span><span class="p">))</span>
+
+	<span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgPlate</span> <span class="o">=</span> <span class="n">croppedImage</span>         <span class="c1"># copy the cropped plate image into the applicable member variable of the possible plate</span>
+
+	<span class="k">return</span> <span class="n">possiblePlate</span></div>
+<span class="c1"># end function</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">L.O.S.E.R.S</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Andrew Seamon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

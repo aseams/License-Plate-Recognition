@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FindChars &#8212; L.O.S.E.R.S 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for FindChars</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">LPR_Final</span>
+<span class="kn">import</span> <span class="nn">preprocess</span>
+<span class="kn">import</span> <span class="nn">PossibleChar</span>
+<span class="kn">import</span> <span class="nn">constants</span>
+
+<span class="n">kNearest</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">KNearest_create</span><span class="p">()</span>
+
+<div class="viewcode-block" id="loadKNNDataAndTrainKNN"><a class="viewcode-back" href="../index.html#FindChars.loadKNNDataAndTrainKNN">[docs]</a><span class="k">def</span> <span class="nf">loadKNNDataAndTrainKNN</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Loads and runs KNN training to ensure best results</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">allContoursWithData</span> <span class="o">=</span> <span class="p">[]</span>                <span class="c1"># declare empty lists,</span>
+	<span class="n">validContoursWithData</span> <span class="o">=</span> <span class="p">[]</span>              <span class="c1"># we will fill these shortly</span>
+
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">npaClassifiers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;classifications.txt&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>                  <span class="c1"># read in training classifications</span>
+	<span class="k">except</span><span class="p">:</span>                                                                             <span class="c1"># if file could not be opened</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error, unable to open classifications.txt, exiting program</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>  			<span class="c1"># show error message</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;pause&quot;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="kc">False</span>                                                                    <span class="c1"># and return False</span>
+	<span class="c1"># end try</span>
+
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">npaFlatImages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;flattened_images.txt&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>                 <span class="c1"># read in training images</span>
+	<span class="k">except</span><span class="p">:</span>                                                                            <span class="c1"># if file could not be opened</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error, unable to open flattened_images.txt, exiting program</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>  	   <span class="c1"># show error message</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;pause&quot;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="kc">False</span>                                                                   <span class="c1"># and return False</span>
+	<span class="c1"># end try</span>
+
+	<span class="n">npaClassifiers</span> <span class="o">=</span> <span class="n">npaClassifiers</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">npaClassifiers</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>       		   <span class="c1"># reshape numpy array to 1d, necessary to pass to call to train</span>
+	<span class="n">kNearest</span><span class="o">.</span><span class="n">setDefaultK</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                                                 		   <span class="c1"># set default K to 1</span>
+	<span class="n">kNearest</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">npaFlatImages</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">ROW_SAMPLE</span><span class="p">,</span> <span class="n">npaClassifiers</span><span class="p">)</span>           		   <span class="c1"># train KNN object</span>
+
+	<span class="k">return</span> <span class="kc">True</span>                             <span class="c1"># if we got here training was successful so return true</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="detectCharsInPlates"><a class="viewcode-back" href="../index.html#FindChars.detectCharsInPlates">[docs]</a><span class="k">def</span> <span class="nf">detectCharsInPlates</span><span class="p">(</span><span class="n">plateList</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Used to detect any possible characters within the image. Then throws out characters not found inside of a rectangle.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">intPlateCounter</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">imgContours</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">contours</span> <span class="o">=</span> <span class="p">[]</span>
+
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">plateList</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>          <span class="c1"># if list of possible plates is empty</span>
+		<span class="k">return</span> <span class="n">plateList</span>             <span class="c1"># return</span>
+	<span class="c1"># end if</span>
+
+			<span class="c1"># at this point we can be sure the list of possible plates has at least one plate</span>
+
+	<span class="k">for</span> <span class="n">possiblePlate</span> <span class="ow">in</span> <span class="n">plateList</span><span class="p">:</span>          <span class="c1"># for each possible plate, this is a big for loop that takes up most of the function</span>
+
+		<span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span> <span class="o">=</span> <span class="n">preprocess</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgPlate</span><span class="p">)</span>     <span class="c1"># preprocess to get grayscale and threshold images</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;5a&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgPlate</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;5b&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgGrayscale</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;5c&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">)</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_5a.png&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgPlate</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_5b.png&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgGrayscale</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_5c.png&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">)</span>
+		<span class="c1"># end if # show steps</span>
+
+				<span class="c1"># increase size of plate image for easier viewing and char detection</span>
+		<span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">fx</span> <span class="o">=</span> <span class="mf">1.6</span><span class="p">,</span> <span class="n">fy</span> <span class="o">=</span> <span class="mf">1.6</span><span class="p">)</span>
+
+				<span class="c1"># threshold again to eliminate any gray areas</span>
+		<span class="n">thresholdValue</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">255.0</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span> <span class="o">|</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;5d&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_5d.png&quot;</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">)</span>
+		<span class="c1"># end if # show steps</span>
+
+				<span class="c1"># find all possible chars in the plate,</span>
+				<span class="c1"># this function first finds all contours, then only includes contours that could be chars (without comparison to other chars yet)</span>
+		<span class="n">listOfPossibleCharsInPlate</span> <span class="o">=</span> <span class="n">findPossibleCharsInPlate</span><span class="p">(</span><span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps</span>
+			<span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">numChannels</span> <span class="o">=</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgPlate</span><span class="o">.</span><span class="n">shape</span>
+			<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+			<span class="k">del</span> <span class="n">contours</span><span class="p">[:]</span>                                         <span class="c1"># clear the contours list</span>
+
+			<span class="k">for</span> <span class="n">possibleChar</span> <span class="ow">in</span> <span class="n">listOfPossibleCharsInPlate</span><span class="p">:</span>
+				<span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">possibleChar</span><span class="o">.</span><span class="n">contour</span><span class="p">)</span>
+			<span class="c1"># end for</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_WHITE</span><span class="p">)</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_6.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="c1"># end if # show steps</span>
+
+				<span class="c1"># given a list of all possible chars, find groups of matching chars within the plate</span>
+		<span class="n">listOfListsOfMatchingCharsInPlate</span> <span class="o">=</span> <span class="n">findListOfListsOfMatchingChars</span><span class="p">(</span><span class="n">listOfPossibleCharsInPlate</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps</span>
+			<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+			<span class="k">del</span> <span class="n">contours</span><span class="p">[:]</span>
+
+			<span class="k">for</span> <span class="n">matchingChars</span> <span class="ow">in</span> <span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">:</span>
+				<span class="n">intRandomBlue</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+				<span class="n">intRandomGreen</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+				<span class="n">intRandomRed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+
+				<span class="k">for</span> <span class="n">matchingChar</span> <span class="ow">in</span> <span class="n">matchingChars</span><span class="p">:</span>
+					<span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matchingChar</span><span class="o">.</span><span class="n">contour</span><span class="p">)</span>
+				<span class="c1"># end for</span>
+				<span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">intRandomBlue</span><span class="p">,</span> <span class="n">intRandomGreen</span><span class="p">,</span> <span class="n">intRandomRed</span><span class="p">))</span>
+			<span class="c1"># end for</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_7.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="c1"># end if # show steps #</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>			<span class="c1"># if no groups of matching chars were found in the plate</span>
+
+			<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;chars found in plate number &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+					<span class="n">intPlateCounter</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; = (none), click on any image and press a key to continue . . .&quot;</span><span class="p">)</span>
+				<span class="n">intPlateCounter</span> <span class="o">=</span> <span class="n">intPlateCounter</span> <span class="o">+</span> <span class="mi">1</span>
+				<span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="s2">&quot;8&quot;</span><span class="p">)</span>
+				<span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="s2">&quot;9&quot;</span><span class="p">)</span>
+				<span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">)</span>
+				<span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+			<span class="c1"># end if # show steps #</span>
+
+			<span class="n">possiblePlate</span><span class="o">.</span><span class="n">strChars</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+			<span class="k">continue</span>						<span class="c1"># go back to top of for loop</span>
+		<span class="c1"># end if</span>
+
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">)):</span>                              <span class="c1"># within each list of matching chars</span>
+			<span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">matchingChar</span><span class="p">:</span> <span class="n">matchingChar</span><span class="o">.</span><span class="n">intCenterX</span><span class="p">)</span>        <span class="c1"># sort chars from left to right</span>
+			<span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">removeInnerOverlappingChars</span><span class="p">(</span><span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>              <span class="c1"># and remove inner overlapping chars</span>
+		<span class="c1"># end for</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+			<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+			<span class="k">for</span> <span class="n">matchingChars</span> <span class="ow">in</span> <span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">:</span>
+				<span class="n">intRandomBlue</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+				<span class="n">intRandomGreen</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+				<span class="n">intRandomRed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+
+				<span class="k">del</span> <span class="n">contours</span><span class="p">[:]</span>
+
+				<span class="k">for</span> <span class="n">matchingChar</span> <span class="ow">in</span> <span class="n">matchingChars</span><span class="p">:</span>
+					<span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matchingChar</span><span class="o">.</span><span class="n">contour</span><span class="p">)</span>
+				<span class="c1"># end for</span>
+
+				<span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">intRandomBlue</span><span class="p">,</span> <span class="n">intRandomGreen</span><span class="p">,</span> <span class="n">intRandomRed</span><span class="p">))</span>
+			<span class="c1"># end for</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;8&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_8.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="c1"># end if # show steps #</span>
+
+				<span class="c1"># within each possible plate, suppose the longest list of potential matching chars is the actual list of chars</span>
+		<span class="n">intLenOfLongestListOfChars</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="n">intIndexOfLongestListOfChars</span> <span class="o">=</span> <span class="mi">0</span>
+
+				<span class="c1"># loop through all the vectors of matching chars, get the index of the one with the most chars</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">)):</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">intLenOfLongestListOfChars</span><span class="p">:</span>
+				<span class="n">intLenOfLongestListOfChars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+				<span class="n">intIndexOfLongestListOfChars</span> <span class="o">=</span> <span class="n">i</span>
+			<span class="c1"># end if</span>
+		<span class="c1"># end for</span>
+
+				<span class="c1"># suppose that the longest list of matching chars within the plate is the actual list of chars</span>
+		<span class="n">longestListOfMatchingCharsInPlate</span> <span class="o">=</span> <span class="n">listOfListsOfMatchingCharsInPlate</span><span class="p">[</span><span class="n">intIndexOfLongestListOfChars</span><span class="p">]</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+			<span class="n">imgContours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+			<span class="k">del</span> <span class="n">contours</span><span class="p">[:]</span>
+
+			<span class="k">for</span> <span class="n">matchingChar</span> <span class="ow">in</span> <span class="n">longestListOfMatchingCharsInPlate</span><span class="p">:</span>
+				<span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matchingChar</span><span class="o">.</span><span class="n">contour</span><span class="p">)</span>
+			<span class="c1"># end for</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">imgContours</span><span class="p">,</span> <span class="n">contours</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_WHITE</span><span class="p">)</span>
+
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;9&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_9.png&quot;</span><span class="p">,</span> <span class="n">imgContours</span><span class="p">)</span>
+		<span class="c1"># end if # show steps #</span>
+
+		<span class="n">possiblePlate</span><span class="o">.</span><span class="n">strChars</span> <span class="o">=</span> <span class="n">recognizeCharsInPlate</span><span class="p">(</span><span class="n">possiblePlate</span><span class="o">.</span><span class="n">imgThresh</span><span class="p">,</span> <span class="n">longestListOfMatchingCharsInPlate</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;chars found in plate number &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+				<span class="n">intPlateCounter</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; = &quot;</span> <span class="o">+</span> <span class="n">possiblePlate</span><span class="o">.</span><span class="n">strChars</span> <span class="o">+</span> <span class="s2">&quot;, click on any image and press a key to continue . . .&quot;</span><span class="p">)</span>
+			<span class="n">intPlateCounter</span> <span class="o">=</span> <span class="n">intPlateCounter</span> <span class="o">+</span> <span class="mi">1</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+		<span class="c1"># end if # show steps #</span>
+
+	<span class="c1"># end of big for loop that takes up most of the function</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">char detection complete, click on any image and press a key to continue . . .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="c1"># end if</span>
+
+	<span class="k">return</span> <span class="n">plateList</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="findPossibleCharsInPlate"><a class="viewcode-back" href="../index.html#FindChars.findPossibleCharsInPlate">[docs]</a><span class="k">def</span> <span class="nf">findPossibleCharsInPlate</span><span class="p">(</span><span class="n">imgGrayscale</span><span class="p">,</span> <span class="n">imgThresh</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Locates all possible characters</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">listOfPossibleChars</span> <span class="o">=</span> <span class="p">[]</span>                        <span class="c1"># this will be the return value</span>
+	<span class="n">contours</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">imgThreshCopy</span> <span class="o">=</span> <span class="n">imgThresh</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+			<span class="c1"># find all contours in plate</span>
+	<span class="n">contours</span><span class="p">,</span> <span class="n">npaHierarchy</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="n">imgThreshCopy</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_LIST</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_SIMPLE</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="n">contour</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">:</span>                        <span class="c1"># for each contour</span>
+		<span class="n">possibleChar</span> <span class="o">=</span> <span class="n">PossibleChar</span><span class="o">.</span><span class="n">PossibleChar</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">checkIfPossibleChar</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">):</span>              <span class="c1"># if contour is a possible char, note this does not compare to other chars (yet) . . .</span>
+			<span class="n">listOfPossibleChars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">)</span>       <span class="c1"># add to list of possible chars</span>
+		<span class="c1"># end if</span>
+	<span class="c1"># end if</span>
+
+	<span class="k">return</span> <span class="n">listOfPossibleChars</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="checkIfPossibleChar"><a class="viewcode-back" href="../index.html#FindChars.checkIfPossibleChar">[docs]</a><span class="k">def</span> <span class="nf">checkIfPossibleChar</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Confirms whether a specific contour might be a character.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectArea</span> <span class="o">&gt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MIN_PIXEL_AREA</span> <span class="ow">and</span>
+		<span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectWidth</span> <span class="o">&gt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MIN_PIXEL_WIDTH</span> <span class="ow">and</span> <span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectHeight</span> <span class="o">&gt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MIN_PIXEL_HEIGHT</span> <span class="ow">and</span>
+		<span class="n">constants</span><span class="o">.</span><span class="n">MIN_ASPECT_RATIO</span> <span class="o">&lt;</span> <span class="n">possibleChar</span><span class="o">.</span><span class="n">fltAspectRatio</span> <span class="ow">and</span> <span class="n">possibleChar</span><span class="o">.</span><span class="n">fltAspectRatio</span> <span class="o">&lt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MAX_ASPECT_RATIO</span><span class="p">):</span>
+		<span class="k">return</span> <span class="kc">True</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kc">False</span></div>
+	<span class="c1"># end if</span>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="findListOfListsOfMatchingChars"><a class="viewcode-back" href="../index.html#FindChars.findListOfListsOfMatchingChars">[docs]</a><span class="k">def</span> <span class="nf">findListOfListsOfMatchingChars</span><span class="p">(</span><span class="n">listOfPossibleChars</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Using all possible chars in one list, rearrange the chars into a list of lists containing matching char strings.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">listOfListsOfMatchingChars</span> <span class="o">=</span> <span class="p">[]</span>                  <span class="c1"># this will be the return value</span>
+
+	<span class="k">for</span> <span class="n">possibleChar</span> <span class="ow">in</span> <span class="n">listOfPossibleChars</span><span class="p">:</span>                        <span class="c1"># for each possible char in the one big list of chars</span>
+		<span class="n">matchingChars</span> <span class="o">=</span> <span class="n">findListOfMatchingChars</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">,</span> <span class="n">listOfPossibleChars</span><span class="p">)</span>        <span class="c1"># find all chars in the big list that match the current char</span>
+
+		<span class="n">matchingChars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">)</span>                <span class="c1"># also add the current char to current possible list of matching chars</span>
+
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MIN_NUMBER_OF_MATCHING_CHARS</span><span class="p">:</span>     <span class="c1"># if current possible list of matching chars is not long enough to constitute a possible plate</span>
+			<span class="k">continue</span>                            <span class="c1"># jump back to the top of the for loop and try again with next char, note that it&#39;s not necessary</span>
+												<span class="c1"># to save the list in any way since it did not have enough chars to be a possible plate</span>
+		<span class="c1"># end if</span>
+
+												<span class="c1"># if we get here, the current list passed test as a &quot;group&quot; or &quot;cluster&quot; of matching chars</span>
+		<span class="n">listOfListsOfMatchingChars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span>      <span class="c1"># so add to our list of lists of matching chars</span>
+
+		<span class="n">listOfPossibleCharsWithCurrentMatchesRemoved</span> <span class="o">=</span> <span class="p">[]</span>
+
+												<span class="c1"># remove the current list of matching chars from the big list so we don&#39;t use those same chars twice,</span>
+												<span class="c1"># make sure to make a new big list for this since we don&#39;t want to change the original big list</span>
+		<span class="n">listOfPossibleCharsWithCurrentMatchesRemoved</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">listOfPossibleChars</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">))</span>
+
+		<span class="n">recursiveListOfListsOfMatchingChars</span> <span class="o">=</span> <span class="n">findListOfListsOfMatchingChars</span><span class="p">(</span><span class="n">listOfPossibleCharsWithCurrentMatchesRemoved</span><span class="p">)</span>      <span class="c1"># recursive call</span>
+
+		<span class="k">for</span> <span class="n">recursiveListOfMatchingChars</span> <span class="ow">in</span> <span class="n">recursiveListOfListsOfMatchingChars</span><span class="p">:</span>        <span class="c1"># for each list of matching chars found by recursive call</span>
+			<span class="n">listOfListsOfMatchingChars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recursiveListOfMatchingChars</span><span class="p">)</span>             <span class="c1"># add to our original list of lists of matching chars</span>
+		<span class="c1"># end for</span>
+
+		<span class="k">break</span>       <span class="c1"># exit for</span>
+
+	<span class="c1"># end for</span>
+
+	<span class="k">return</span> <span class="n">listOfListsOfMatchingChars</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="findListOfMatchingChars"><a class="viewcode-back" href="../index.html#FindChars.findListOfMatchingChars">[docs]</a><span class="k">def</span> <span class="nf">findListOfMatchingChars</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">,</span> <span class="n">listOfChars</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Given a possible character and a list of possible characters, find all chars in main list that match, and return a list of matches.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">matchingChars</span> <span class="o">=</span> <span class="p">[]</span>                <span class="c1"># this will be the return value</span>
+
+	<span class="k">for</span> <span class="n">possibleMatchingChar</span> <span class="ow">in</span> <span class="n">listOfChars</span><span class="p">:</span>                <span class="c1"># for each char in big list</span>
+		<span class="k">if</span> <span class="n">possibleMatchingChar</span> <span class="o">==</span> <span class="n">possibleChar</span><span class="p">:</span>    <span class="c1"># if the char we attempting to find matches for is the exact same char as the char in the big list we are currently checking</span>
+													<span class="c1"># then we should not include it in the list of matches b/c that would end up double including the current char</span>
+			<span class="k">continue</span>                                <span class="c1"># so do not add to list of matches and jump back to top of for loop</span>
+		<span class="c1"># end if</span>
+					<span class="c1"># compute stuff to see if chars are a match</span>
+		<span class="n">fltDistanceBetweenChars</span> <span class="o">=</span> <span class="n">distanceBetweenChars</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">,</span> <span class="n">possibleMatchingChar</span><span class="p">)</span>
+
+		<span class="n">fltAngleBetweenChars</span> <span class="o">=</span> <span class="n">angleBetweenChars</span><span class="p">(</span><span class="n">possibleChar</span><span class="p">,</span> <span class="n">possibleMatchingChar</span><span class="p">)</span>
+
+		<span class="n">fltChangeInArea</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">possibleMatchingChar</span><span class="o">.</span><span class="n">intBoundingRectArea</span> <span class="o">-</span> <span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectArea</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectArea</span><span class="p">)</span>
+
+		<span class="n">fltChangeInWidth</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">possibleMatchingChar</span><span class="o">.</span><span class="n">intBoundingRectWidth</span> <span class="o">-</span> <span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectWidth</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectWidth</span><span class="p">)</span>
+		<span class="n">fltChangeInHeight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">possibleMatchingChar</span><span class="o">.</span><span class="n">intBoundingRectHeight</span> <span class="o">-</span> <span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectHeight</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">possibleChar</span><span class="o">.</span><span class="n">intBoundingRectHeight</span><span class="p">)</span>
+
+				<span class="c1"># check if chars match</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">fltDistanceBetweenChars</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">possibleChar</span><span class="o">.</span><span class="n">fltDiagonalSize</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">MAX_DIAG_SIZE_MULTIPLE_AWAY</span><span class="p">)</span> <span class="ow">and</span>
+			<span class="n">fltAngleBetweenChars</span> <span class="o">&lt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MAX_ANGLE_BETWEEN_CHARS</span> <span class="ow">and</span>
+			<span class="n">fltChangeInArea</span> <span class="o">&lt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MAX_CHANGE_IN_AREA</span> <span class="ow">and</span>
+			<span class="n">fltChangeInWidth</span> <span class="o">&lt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MAX_CHANGE_IN_WIDTH</span> <span class="ow">and</span>
+			<span class="n">fltChangeInHeight</span> <span class="o">&lt;</span> <span class="n">constants</span><span class="o">.</span><span class="n">MAX_CHANGE_IN_HEIGHT</span><span class="p">):</span>
+
+			<span class="n">matchingChars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">possibleMatchingChar</span><span class="p">)</span>        <span class="c1"># if the chars are a match, add the current char to list of matching chars</span>
+		<span class="c1"># end if</span>
+	<span class="c1"># end for</span>
+
+	<span class="k">return</span> <span class="n">matchingChars</span>                  <span class="c1"># return result</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="distanceBetweenChars"><a class="viewcode-back" href="../index.html#FindChars.distanceBetweenChars">[docs]</a><span class="k">def</span> <span class="nf">distanceBetweenChars</span><span class="p">(</span><span class="n">firstChar</span><span class="p">,</span> <span class="n">secondChar</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Use Pythagorean theorem to calculate distance between two chars</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">intX</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">firstChar</span><span class="o">.</span><span class="n">intCenterX</span> <span class="o">-</span> <span class="n">secondChar</span><span class="o">.</span><span class="n">intCenterX</span><span class="p">)</span>
+	<span class="n">intY</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">firstChar</span><span class="o">.</span><span class="n">intCenterY</span> <span class="o">-</span> <span class="n">secondChar</span><span class="o">.</span><span class="n">intCenterY</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">intX</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">intY</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="angleBetweenChars"><a class="viewcode-back" href="../index.html#FindChars.angleBetweenChars">[docs]</a><span class="k">def</span> <span class="nf">angleBetweenChars</span><span class="p">(</span><span class="n">firstChar</span><span class="p">,</span> <span class="n">secondChar</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Use basic trigonometry (SOH CAH TOA) to calculate angle between chars</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">fltAdj</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">firstChar</span><span class="o">.</span><span class="n">intCenterX</span> <span class="o">-</span> <span class="n">secondChar</span><span class="o">.</span><span class="n">intCenterX</span><span class="p">))</span>
+	<span class="n">fltOpp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">firstChar</span><span class="o">.</span><span class="n">intCenterY</span> <span class="o">-</span> <span class="n">secondChar</span><span class="o">.</span><span class="n">intCenterY</span><span class="p">))</span>
+
+	<span class="k">if</span> <span class="n">fltAdj</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>                           <span class="c1"># check to make sure we do not divide by zero if the center X positions are equal, float division by zero will cause a crash in Python</span>
+		<span class="n">fltAngleInRad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">fltOpp</span> <span class="o">/</span> <span class="n">fltAdj</span><span class="p">)</span>      <span class="c1"># if adjacent is not zero, calculate angle</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">fltAngleInRad</span> <span class="o">=</span> <span class="mf">1.5708</span>                          <span class="c1"># if adjacent is zero, use this as the angle, this is to be consistent with the C++ version of this program</span>
+	<span class="c1"># end if</span>
+
+	<span class="n">fltAngleInDeg</span> <span class="o">=</span> <span class="n">fltAngleInRad</span> <span class="o">*</span> <span class="p">(</span><span class="mf">180.0</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>       <span class="c1"># calculate angle in degrees</span>
+
+	<span class="k">return</span> <span class="n">fltAngleInDeg</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="removeInnerOverlappingChars"><a class="viewcode-back" href="../index.html#FindChars.removeInnerOverlappingChars">[docs]</a><span class="k">def</span> <span class="nf">removeInnerOverlappingChars</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	If multiple chars overlap, remove the inner char. Prevents including same char twice if multiple contours are found for the same physical char.</span>
+<span class="sd">	Ex: &#39;O&#39; has an outer &#39;O&#39; and an inner &#39;o&#39;</span>
+<span class="sd">	&#39;R&#39; has an outer &#39;R&#39; and an inner &#39;D&#39; </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">listOfMatchingCharsWithInnerCharRemoved</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">matchingChars</span><span class="p">)</span>                <span class="c1"># this will be the return value</span>
+
+	<span class="k">for</span> <span class="n">currentChar</span> <span class="ow">in</span> <span class="n">matchingChars</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">otherChar</span> <span class="ow">in</span> <span class="n">matchingChars</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">currentChar</span> <span class="o">!=</span> <span class="n">otherChar</span><span class="p">:</span>        <span class="c1"># if current char and other char are not the same char . . .</span>
+																			<span class="c1"># if current char and other char have center points at almost the same location . . .</span>
+				<span class="k">if</span> <span class="n">distanceBetweenChars</span><span class="p">(</span><span class="n">currentChar</span><span class="p">,</span> <span class="n">otherChar</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">currentChar</span><span class="o">.</span><span class="n">fltDiagonalSize</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">MIN_DIAG_SIZE_MULTIPLE_AWAY</span><span class="p">):</span>
+								<span class="c1"># if we get in here we have found overlapping chars</span>
+								<span class="c1"># next we identify which char is smaller, then if that char was not already removed on a previous pass, remove it</span>
+					<span class="k">if</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectArea</span> <span class="o">&lt;</span> <span class="n">otherChar</span><span class="o">.</span><span class="n">intBoundingRectArea</span><span class="p">:</span>         <span class="c1"># if current char is smaller than other char</span>
+						<span class="k">if</span> <span class="n">currentChar</span> <span class="ow">in</span> <span class="n">listOfMatchingCharsWithInnerCharRemoved</span><span class="p">:</span>              <span class="c1"># if current char was not already removed on a previous pass . . .</span>
+							<span class="n">listOfMatchingCharsWithInnerCharRemoved</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">currentChar</span><span class="p">)</span>         <span class="c1"># then remove current char</span>
+						<span class="c1"># end if</span>
+					<span class="k">else</span><span class="p">:</span>                                                                       <span class="c1"># else if other char is smaller than current char</span>
+						<span class="k">if</span> <span class="n">otherChar</span> <span class="ow">in</span> <span class="n">listOfMatchingCharsWithInnerCharRemoved</span><span class="p">:</span>                <span class="c1"># if other char was not already removed on a previous pass . . .</span>
+							<span class="n">listOfMatchingCharsWithInnerCharRemoved</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">otherChar</span><span class="p">)</span>           <span class="c1"># then remove other char</span>
+						<span class="c1"># end if</span>
+					<span class="c1"># end if</span>
+				<span class="c1"># end if</span>
+			<span class="c1"># end if</span>
+		<span class="c1"># end for</span>
+	<span class="c1"># end for</span>
+
+	<span class="k">return</span> <span class="n">listOfMatchingCharsWithInnerCharRemoved</span></div>
+<span class="c1"># end function</span>
+
+<div class="viewcode-block" id="recognizeCharsInPlate"><a class="viewcode-back" href="../index.html#FindChars.recognizeCharsInPlate">[docs]</a><span class="k">def</span> <span class="nf">recognizeCharsInPlate</span><span class="p">(</span><span class="n">imgThresh</span><span class="p">,</span> <span class="n">matchingChars</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Applies true character recognition</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">strChars</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>               <span class="c1"># this will be the return value, the chars in the lic plate</span>
+
+	<span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">imgThresh</span><span class="o">.</span><span class="n">shape</span>
+
+	<span class="n">imgThreshColor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+	<span class="n">matchingChars</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">matchingChar</span><span class="p">:</span> <span class="n">matchingChar</span><span class="o">.</span><span class="n">intCenterX</span><span class="p">)</span>        <span class="c1"># sort chars from left to right</span>
+
+	<span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">imgThresh</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_GRAY2BGR</span><span class="p">,</span> <span class="n">imgThreshColor</span><span class="p">)</span>                     <span class="c1"># make color version of threshold image so we can draw contours in color on it</span>
+
+	<span class="k">for</span> <span class="n">currentChar</span> <span class="ow">in</span> <span class="n">matchingChars</span><span class="p">:</span>                                         <span class="c1"># for each char in plate</span>
+		<span class="n">pt1</span> <span class="o">=</span> <span class="p">(</span><span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectX</span><span class="p">,</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectY</span><span class="p">)</span>
+		<span class="n">pt2</span> <span class="o">=</span> <span class="p">((</span><span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectX</span> <span class="o">+</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectWidth</span><span class="p">),</span> <span class="p">(</span><span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectY</span> <span class="o">+</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectHeight</span><span class="p">))</span>
+
+		<span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">imgThreshColor</span><span class="p">,</span> <span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">SCALAR_GREEN</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>           <span class="c1"># draw green box around the char</span>
+
+				<span class="c1"># crop char out of threshold image</span>
+		<span class="n">imgROI</span> <span class="o">=</span> <span class="n">imgThresh</span><span class="p">[</span><span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectY</span> <span class="p">:</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectY</span> <span class="o">+</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectHeight</span><span class="p">,</span>
+						   <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectX</span> <span class="p">:</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectX</span> <span class="o">+</span> <span class="n">currentChar</span><span class="o">.</span><span class="n">intBoundingRectWidth</span><span class="p">]</span>
+
+		<span class="n">imgROIResized</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">imgROI</span><span class="p">,</span> <span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">RESIZED_CHAR_IMAGE_WIDTH</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">RESIZED_CHAR_IMAGE_HEIGHT</span><span class="p">))</span>           <span class="c1"># resize image, this is necessary for char recognition</span>
+
+		<span class="n">npaROIResized</span> <span class="o">=</span> <span class="n">imgROIResized</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">RESIZED_CHAR_IMAGE_WIDTH</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">RESIZED_CHAR_IMAGE_HEIGHT</span><span class="p">))</span>        <span class="c1"># flatten image into 1d numpy array</span>
+
+		<span class="n">npaROIResized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">npaROIResized</span><span class="p">)</span>               <span class="c1"># convert from 1d numpy array of ints to 1d numpy array of floats</span>
+
+		<span class="n">retval</span><span class="p">,</span> <span class="n">npaResults</span><span class="p">,</span> <span class="n">neigh_resp</span><span class="p">,</span> <span class="n">dists</span> <span class="o">=</span> <span class="n">kNearest</span><span class="o">.</span><span class="n">findNearest</span><span class="p">(</span><span class="n">npaROIResized</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>              <span class="c1"># finally we can call findNearest !!!</span>
+
+		<span class="n">strCurrentChar</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">npaResults</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])))</span>            <span class="c1"># get character from results</span>
+
+		<span class="n">strChars</span> <span class="o">=</span> <span class="n">strChars</span> <span class="o">+</span> <span class="n">strCurrentChar</span>                        <span class="c1"># append current char to full string</span>
+
+	<span class="c1"># end for</span>
+
+	<span class="k">if</span> <span class="n">LPR_Final</span><span class="o">.</span><span class="n">showSteps</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># show steps #</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="n">imgThreshColor</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;./LPR_Output/FindChars_10.png&quot;</span><span class="p">,</span> <span class="n">imgThreshColor</span><span class="p">)</span>
+	<span class="c1"># end if # show steps #</span>
+
+	<span class="k">return</span> <span class="n">strChars</span></div>
+<span class="c1"># end function</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">L.O.S.E.R.S</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Andrew Seamon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

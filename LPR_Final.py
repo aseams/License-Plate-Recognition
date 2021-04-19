@@ -14,7 +14,6 @@ import constants
 import doubleCheck
 
 showSteps = False
-###################################################################################################
 
 def main():
 	"""
@@ -28,7 +27,7 @@ def main():
 	# end if
 	doubleCheck.ensure_dir("./LPR_Output")
 	with open("API_KEY.txt", "r") as file:
-    	constants.API_KEY = file.read()
+		constants.API_KEY = file.read()
 
 	root = Tk()
 	root.withdraw()
@@ -87,13 +86,11 @@ def main():
 
 		# end if else
 
-		#cv2.waitKey(0)					# hold windows open until user presses a key
 		doubleCheck.confirmDB(truePlate.strChars.lower())
 
 	database.close()
 	return
 
-###################################################################################################
 def drawRedRectangleAroundPlate(originalImage, truePlate):
 	"""
 	Draws a rectangle around the found plate. Uses tuples of points to make each side of the rectangle.
@@ -106,7 +103,7 @@ def drawRedRectangleAroundPlate(originalImage, truePlate):
 	cv2.line(originalImage, tuple(p2fRectPoints[2]), tuple(p2fRectPoints[3]), constants.SCALAR_RED, 2)
 	cv2.line(originalImage, tuple(p2fRectPoints[3]), tuple(p2fRectPoints[0]), constants.SCALAR_RED, 2)
 
-###################################################################################################
+
 def writeLicensePlateCharsOnImage(originalImage, truePlate):
 	"""
 	Writes characters on top of input image. Also includes rectangle around plate.
@@ -148,6 +145,5 @@ def writeLicensePlateCharsOnImage(originalImage, truePlate):
 			# write the text on the image
 	cv2.putText(originalImage, truePlate.strChars, (BottomLeftTextBoxX, BottomLeftTextBoxY), intFontFace, fltFontScale, constants.SCALAR_YELLOW, intFontThickness)
 
-###################################################################################################
 if __name__ == "__main__":
 	main()

@@ -1,0 +1,729 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L.O.S.E.R.S documentation! &#8212; L.O.S.E.R.S 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="l-o-s-e-r-s-documentation">
+<h1>L.O.S.E.R.S documentation!<a class="headerlink" href="#l-o-s-e-r-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+<div class="section" id="classifications-txt">
+<h3>classifications.txt<a class="headerlink" href="#classifications-txt" title="Permalink to this headline">¶</a></h3>
+<p>Contains classifications for character recognition training</p>
+</div>
+<div class="section" id="constants-py">
+<h3>constants.py<a class="headerlink" href="#constants-py" title="Permalink to this headline">¶</a></h3>
+<details class="sphinx-bs dropdown card mb-3">
+<summary class="summary-title card-header">
+Colors<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body docutils">
+<dl class="py data">
+<dt id="constants.SCALAR_BLACK">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">SCALAR_BLACK</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0)</span></em><a class="headerlink" href="#constants.SCALAR_BLACK" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Built-in immutable sequence.</p>
+<p class="card-text">If no argument is given, the constructor returns an empty tuple.
+If iterable is specified the tuple is initialized from iterable’s items.</p>
+<p class="card-text">If the argument is a tuple, the return value is the same object.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.SCALAR_WHITE">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">SCALAR_WHITE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(255.0,</span> <span class="pre">255.0,</span> <span class="pre">255.0)</span></em><a class="headerlink" href="#constants.SCALAR_WHITE" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Built-in immutable sequence.</p>
+<p class="card-text">If no argument is given, the constructor returns an empty tuple.
+If iterable is specified the tuple is initialized from iterable’s items.</p>
+<p class="card-text">If the argument is a tuple, the return value is the same object.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.SCALAR_YELLOW">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">SCALAR_YELLOW</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(0.0,</span> <span class="pre">255.0,</span> <span class="pre">255.0)</span></em><a class="headerlink" href="#constants.SCALAR_YELLOW" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Built-in immutable sequence.</p>
+<p class="card-text">If no argument is given, the constructor returns an empty tuple.
+If iterable is specified the tuple is initialized from iterable’s items.</p>
+<p class="card-text">If the argument is a tuple, the return value is the same object.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.SCALAR_GREEN">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">SCALAR_GREEN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(0.0,</span> <span class="pre">255.0,</span> <span class="pre">0.0)</span></em><a class="headerlink" href="#constants.SCALAR_GREEN" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Built-in immutable sequence.</p>
+<p class="card-text">If no argument is given, the constructor returns an empty tuple.
+If iterable is specified the tuple is initialized from iterable’s items.</p>
+<p class="card-text">If the argument is a tuple, the return value is the same object.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.SCALAR_RED">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">SCALAR_RED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(0.0,</span> <span class="pre">0.0,</span> <span class="pre">255.0)</span></em><a class="headerlink" href="#constants.SCALAR_RED" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Built-in immutable sequence.</p>
+<p class="card-text">If no argument is given, the constructor returns an empty tuple.
+If iterable is specified the tuple is initialized from iterable’s items.</p>
+<p class="card-text">If the argument is a tuple, the return value is the same object.</p>
+</dd></dl>
+
+</div>
+</details><details class="sphinx-bs dropdown card mb-3">
+<summary class="summary-title card-header">
+Preprocessing<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body docutils">
+<dl class="py data">
+<dt id="constants.GAUSSIAN_SMOOTH_FILTER_SIZE">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">GAUSSIAN_SMOOTH_FILTER_SIZE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(5,</span> <span class="pre">5)</span></em><a class="headerlink" href="#constants.GAUSSIAN_SMOOTH_FILTER_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">constants for preprocessing.py</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.ADAPTIVE_THRESH_BLOCK_SIZE">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">ADAPTIVE_THRESH_BLOCK_SIZE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">19</span></em><a class="headerlink" href="#constants.ADAPTIVE_THRESH_BLOCK_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">int([x]) -&gt; integer
+int(x, base=10) -&gt; integer</p>
+<p class="card-text">Convert a number or string to an integer, or return 0 if no arguments
+are given.  If x is a number, return x.__int__().  For floating point
+numbers, this truncates towards zero.</p>
+<p class="card-text">If x is not a number or if base is given, then x must be a string,
+bytes, or bytearray instance representing an integer literal in the
+given base.  The literal can be preceded by ‘+’ or ‘-‘ and be surrounded
+by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+Base 0 means to interpret the base from the string as an integer literal.
+&gt;&gt;&gt; int(‘0b100’, base=0)
+4</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.ADAPTIVE_THRESH_WEIGHT">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">ADAPTIVE_THRESH_WEIGHT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#constants.ADAPTIVE_THRESH_WEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">int([x]) -&gt; integer
+int(x, base=10) -&gt; integer</p>
+<p class="card-text">Convert a number or string to an integer, or return 0 if no arguments
+are given.  If x is a number, return x.__int__().  For floating point
+numbers, this truncates towards zero.</p>
+<p class="card-text">If x is not a number or if base is given, then x must be a string,
+bytes, or bytearray instance representing an integer literal in the
+given base.  The literal can be preceded by ‘+’ or ‘-‘ and be surrounded
+by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+Base 0 means to interpret the base from the string as an integer literal.
+&gt;&gt;&gt; int(‘0b100’, base=0)
+4</p>
+</dd></dl>
+
+</div>
+</details><details class="sphinx-bs dropdown card mb-3">
+<summary class="summary-title card-header">
+License Plates<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body docutils">
+<dl class="py data">
+<dt id="constants.PLATE_WIDTH_PADDING_FACTOR">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">PLATE_WIDTH_PADDING_FACTOR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1.3</span></em><a class="headerlink" href="#constants.PLATE_WIDTH_PADDING_FACTOR" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">constants for findPlates.py</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.PLATE_HEIGHT_PADDING_FACTOR">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">PLATE_HEIGHT_PADDING_FACTOR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1.5</span></em><a class="headerlink" href="#constants.PLATE_HEIGHT_PADDING_FACTOR" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Convert a string or number to a floating point number, if possible.</p>
+</dd></dl>
+
+</div>
+</details><details class="sphinx-bs dropdown card mb-3">
+<summary class="summary-title card-header">
+Possible Characters<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body docutils">
+<dl class="py data">
+<dt id="constants.MIN_PIXEL_WIDTH">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MIN_PIXEL_WIDTH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#constants.MIN_PIXEL_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">constants for use with checkIfPossibleChar, this checks one possible char only (does not compare to another char)
+pixel size</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MIN_PIXEL_HEIGHT">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MIN_PIXEL_HEIGHT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#constants.MIN_PIXEL_HEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">int([x]) -&gt; integer
+int(x, base=10) -&gt; integer</p>
+<p class="card-text">Convert a number or string to an integer, or return 0 if no arguments
+are given.  If x is a number, return x.__int__().  For floating point
+numbers, this truncates towards zero.</p>
+<p class="card-text">If x is not a number or if base is given, then x must be a string,
+bytes, or bytearray instance representing an integer literal in the
+given base.  The literal can be preceded by ‘+’ or ‘-‘ and be surrounded
+by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+Base 0 means to interpret the base from the string as an integer literal.
+&gt;&gt;&gt; int(‘0b100’, base=0)
+4</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MIN_ASPECT_RATIO">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MIN_ASPECT_RATIO</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.25</span></em><a class="headerlink" href="#constants.MIN_ASPECT_RATIO" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">aspect ratio</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MAX_ASPECT_RATIO">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MAX_ASPECT_RATIO</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1.0</span></em><a class="headerlink" href="#constants.MAX_ASPECT_RATIO" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Convert a string or number to a floating point number, if possible.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MIN_PIXEL_AREA">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MIN_PIXEL_AREA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">80</span></em><a class="headerlink" href="#constants.MIN_PIXEL_AREA" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">pixel area</p>
+</dd></dl>
+
+</div>
+</details><details class="sphinx-bs dropdown card mb-3">
+<summary class="summary-title card-header">
+Comparing Characters<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body docutils">
+<dl class="py data">
+<dt id="constants.MIN_DIAG_SIZE_MULTIPLE_AWAY">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MIN_DIAG_SIZE_MULTIPLE_AWAY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.3</span></em><a class="headerlink" href="#constants.MIN_DIAG_SIZE_MULTIPLE_AWAY" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">constants for comparing two chars</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MAX_DIAG_SIZE_MULTIPLE_AWAY">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MAX_DIAG_SIZE_MULTIPLE_AWAY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5.0</span></em><a class="headerlink" href="#constants.MAX_DIAG_SIZE_MULTIPLE_AWAY" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Convert a string or number to a floating point number, if possible.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MAX_CHANGE_IN_AREA">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MAX_CHANGE_IN_AREA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.5</span></em><a class="headerlink" href="#constants.MAX_CHANGE_IN_AREA" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Convert a string or number to a floating point number, if possible.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MAX_CHANGE_IN_WIDTH">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MAX_CHANGE_IN_WIDTH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.8</span></em><a class="headerlink" href="#constants.MAX_CHANGE_IN_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Convert a string or number to a floating point number, if possible.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MAX_CHANGE_IN_HEIGHT">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MAX_CHANGE_IN_HEIGHT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.2</span></em><a class="headerlink" href="#constants.MAX_CHANGE_IN_HEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Convert a string or number to a floating point number, if possible.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MAX_ANGLE_BETWEEN_CHARS">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MAX_ANGLE_BETWEEN_CHARS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">12.0</span></em><a class="headerlink" href="#constants.MAX_ANGLE_BETWEEN_CHARS" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Convert a string or number to a floating point number, if possible.</p>
+</dd></dl>
+
+</div>
+</details><details class="sphinx-bs dropdown card mb-3">
+<summary class="summary-title card-header">
+Other<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body docutils">
+<dl class="py data">
+<dt id="constants.MIN_NUMBER_OF_MATCHING_CHARS">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MIN_NUMBER_OF_MATCHING_CHARS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#constants.MIN_NUMBER_OF_MATCHING_CHARS" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">other constants</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.RESIZED_CHAR_IMAGE_WIDTH">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">RESIZED_CHAR_IMAGE_WIDTH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">20</span></em><a class="headerlink" href="#constants.RESIZED_CHAR_IMAGE_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">int([x]) -&gt; integer
+int(x, base=10) -&gt; integer</p>
+<p class="card-text">Convert a number or string to an integer, or return 0 if no arguments
+are given.  If x is a number, return x.__int__().  For floating point
+numbers, this truncates towards zero.</p>
+<p class="card-text">If x is not a number or if base is given, then x must be a string,
+bytes, or bytearray instance representing an integer literal in the
+given base.  The literal can be preceded by ‘+’ or ‘-‘ and be surrounded
+by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+Base 0 means to interpret the base from the string as an integer literal.
+&gt;&gt;&gt; int(‘0b100’, base=0)
+4</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.RESIZED_CHAR_IMAGE_HEIGHT">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">RESIZED_CHAR_IMAGE_HEIGHT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">30</span></em><a class="headerlink" href="#constants.RESIZED_CHAR_IMAGE_HEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">int([x]) -&gt; integer
+int(x, base=10) -&gt; integer</p>
+<p class="card-text">Convert a number or string to an integer, or return 0 if no arguments
+are given.  If x is a number, return x.__int__().  For floating point
+numbers, this truncates towards zero.</p>
+<p class="card-text">If x is not a number or if base is given, then x must be a string,
+bytes, or bytearray instance representing an integer literal in the
+given base.  The literal can be preceded by ‘+’ or ‘-‘ and be surrounded
+by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+Base 0 means to interpret the base from the string as an integer literal.
+&gt;&gt;&gt; int(‘0b100’, base=0)
+4</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.MIN_CONTOUR_AREA">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">MIN_CONTOUR_AREA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">100</span></em><a class="headerlink" href="#constants.MIN_CONTOUR_AREA" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">int([x]) -&gt; integer
+int(x, base=10) -&gt; integer</p>
+<p class="card-text">Convert a number or string to an integer, or return 0 if no arguments
+are given.  If x is a number, return x.__int__().  For floating point
+numbers, this truncates towards zero.</p>
+<p class="card-text">If x is not a number or if base is given, then x must be a string,
+bytes, or bytearray instance representing an integer literal in the
+given base.  The literal can be preceded by ‘+’ or ‘-‘ and be surrounded
+by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+Base 0 means to interpret the base from the string as an integer literal.
+&gt;&gt;&gt; int(‘0b100’, base=0)
+4</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.typeface">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">typeface</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'Typeface.png'</span></em><a class="headerlink" href="#constants.typeface" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">characterRecognition</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.state_names">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">state_names</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['Alaska',</span> <span class="pre">'Alabama',</span> <span class="pre">'Arkansas',</span> <span class="pre">'American</span> <span class="pre">Samoa',</span> <span class="pre">'Arizona',</span> <span class="pre">'California',</span> <span class="pre">'Colorado',</span> <span class="pre">'Connecticut',</span> <span class="pre">'District</span> <span class="pre">of</span> <span class="pre">Columbia',</span> <span class="pre">'Delaware',</span> <span class="pre">'Florida',</span> <span class="pre">'Georgia',</span> <span class="pre">'Guam',</span> <span class="pre">'Hawaii',</span> <span class="pre">'Iowa',</span> <span class="pre">'Idaho',</span> <span class="pre">'Illinois',</span> <span class="pre">'Indiana',</span> <span class="pre">'Kansas',</span> <span class="pre">'Kentucky',</span> <span class="pre">'Louisiana',</span> <span class="pre">'Massachusetts',</span> <span class="pre">'Maryland',</span> <span class="pre">'Maine',</span> <span class="pre">'Michigan',</span> <span class="pre">'Minnesota',</span> <span class="pre">'Missouri',</span> <span class="pre">'Mississippi',</span> <span class="pre">'Montana',</span> <span class="pre">'North</span> <span class="pre">Carolina',</span> <span class="pre">'North</span> <span class="pre">Dakota',</span> <span class="pre">'Nebraska',</span> <span class="pre">'New</span> <span class="pre">Hampshire',</span> <span class="pre">'New</span> <span class="pre">Jersey',</span> <span class="pre">'New</span> <span class="pre">Mexico',</span> <span class="pre">'Nevada',</span> <span class="pre">'New</span> <span class="pre">York',</span> <span class="pre">'Ohio',</span> <span class="pre">'Oklahoma',</span> <span class="pre">'Oregon',</span> <span class="pre">'Pennsylvania',</span> <span class="pre">'Puerto</span> <span class="pre">Rico',</span> <span class="pre">'Rhode</span> <span class="pre">Island',</span> <span class="pre">'South</span> <span class="pre">Carolina',</span> <span class="pre">'South</span> <span class="pre">Dakota',</span> <span class="pre">'Tennessee',</span> <span class="pre">'Texas',</span> <span class="pre">'Utah',</span> <span class="pre">'Virginia',</span> <span class="pre">'Virgin</span> <span class="pre">Islands',</span> <span class="pre">'Vermont',</span> <span class="pre">'Washington',</span> <span class="pre">'Wisconsin',</span> <span class="pre">'West</span> <span class="pre">Virginia',</span> <span class="pre">'Wyoming']</span></em><a class="headerlink" href="#constants.state_names" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">Used for state recognition in a string</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="constants.API_KEY">
+<code class="sig-prename descclassname"><span class="pre">constants.</span></code><code class="sig-name descname"><span class="pre">API_KEY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">''</span></em><a class="headerlink" href="#constants.API_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p class="card-text">assigned at start of LPR_Final.py</p>
+</dd></dl>
+
+</div>
+</details></div>
+<div class="section" id="module-database">
+<span id="database-py"></span><h3>database.py<a class="headerlink" href="#module-database" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="database.close">
+<code class="sig-prename descclassname"><span class="pre">database.</span></code><code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database.html#close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes database connection</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="database.connect">
+<code class="sig-prename descclassname"><span class="pre">database.</span></code><code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database.html#connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connects Python to local database with login info from dbConn.py</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="database.insert">
+<code class="sig-prename descclassname"><span class="pre">database.</span></code><code class="sig-name descname"><span class="pre">insert</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database.html#insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to insert rrecords into database table</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="database.select">
+<code class="sig-prename descclassname"><span class="pre">database.</span></code><code class="sig-name descname"><span class="pre">select</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database.html#select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to select all records in the table. Currently not used.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dbConn">
+<span id="dbconn-py"></span><h3>dbConn.py<a class="headerlink" href="#module-dbConn" title="Permalink to this headline">¶</a></h3>
+<p>Parameters for use with database.py</p>
+<dl class="field-list simple">
+<dt class="field-odd">host</dt>
+<dd class="field-odd"><p>localhost (for now)</p>
+</dd>
+<dt class="field-even">user</dt>
+<dd class="field-even"><p>root (not to worry)</p>
+</dd>
+<dt class="field-odd">passwd</dt>
+<dd class="field-odd"><p>n/a (Again. It’s a local database.)</p>
+</dd>
+<dt class="field-even">database</dt>
+<dd class="field-even"><p>vehicles</p>
+</dd>
+<dt class="field-odd">table</dt>
+<dd class="field-odd"><p>captures</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-doubleCheck">
+<span id="doublecheck-py"></span><h3>doubleCheck.py<a class="headerlink" href="#module-doubleCheck" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="doubleCheck.confirmDB">
+<code class="sig-prename descclassname"><span class="pre">doubleCheck.</span></code><code class="sig-name descname"><span class="pre">confirmDB</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origPlate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doubleCheck.html#confirmDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#doubleCheck.confirmDB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows user to add/skip a certain vehicle record.
+Also allows adding comments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="doubleCheck.decodeJSON">
+<code class="sig-prename descclassname"><span class="pre">doubleCheck.</span></code><code class="sig-name descname"><span class="pre">decodeJSON</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jason</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doubleCheck.html#decodeJSON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#doubleCheck.decodeJSON" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses regex to split the parsed text from OCR.space.
+Then using multiple methods, it attempts
+to differentiate state from plate from [other].
+This is done with string length then string matching
+(check for text in list of states/common issues*)
+* California and their script typeface:(</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="doubleCheck.ensure_dir">
+<code class="sig-prename descclassname"><span class="pre">doubleCheck.</span></code><code class="sig-name descname"><span class="pre">ensure_dir</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doubleCheck.html#ensure_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#doubleCheck.ensure_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes sure there is a place to output files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="doubleCheck.getOCR">
+<code class="sig-prename descclassname"><span class="pre">doubleCheck.</span></code><code class="sig-name descname"><span class="pre">getOCR</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doubleCheck.html#getOCR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#doubleCheck.getOCR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Credit: Zaargh | Github
+OCR.space API request with local file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Filename</dt>
+<dd class="field-odd"><p>Your file path &amp; name.</p>
+</dd>
+<dt class="field-even">Overlay</dt>
+<dd class="field-even"><p>Do you need an overlay in the response. Default [F].</p>
+</dd>
+<dt class="field-odd">Api_key</dt>
+<dd class="field-odd"><p>OCR.space API key. Defaults to [helloworld].</p>
+</dd>
+<dt class="field-even">Language</dt>
+<dd class="field-even"><p>Language code to be used in OCR. Default [eng].</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Result in JSON format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="doubleCheck.stateExists">
+<code class="sig-prename descclassname"><span class="pre">doubleCheck.</span></code><code class="sig-name descname"><span class="pre">stateExists</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doubleCheck.html#stateExists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#doubleCheck.stateExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirms whether a string is a state or not.
+Uses full name, abbreviation, and common errors.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-FindChars">
+<span id="findchars-py"></span><h3>FindChars.py<a class="headerlink" href="#module-FindChars" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="FindChars.angleBetweenChars">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">angleBetweenChars</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">firstChar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondChar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#angleBetweenChars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.angleBetweenChars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use basic trigonometry (SOH CAH TOA) to calculate angle between chars</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.checkIfPossibleChar">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">checkIfPossibleChar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">possibleChar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#checkIfPossibleChar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.checkIfPossibleChar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirms whether a specific contour might be a character.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.detectCharsInPlates">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">detectCharsInPlates</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plateList</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#detectCharsInPlates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.detectCharsInPlates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to detect any possible characters within the image. Then throws out characters not found inside of a rectangle.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.distanceBetweenChars">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">distanceBetweenChars</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">firstChar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondChar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#distanceBetweenChars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.distanceBetweenChars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Pythagorean theorem to calculate distance between two chars</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.findListOfListsOfMatchingChars">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">findListOfListsOfMatchingChars</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listOfPossibleChars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#findListOfListsOfMatchingChars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.findListOfListsOfMatchingChars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using all possible chars in one list, rearrange the chars into a list of lists containing matching char strings.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.findListOfMatchingChars">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">findListOfMatchingChars</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">possibleChar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listOfChars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#findListOfMatchingChars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.findListOfMatchingChars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a possible character and a list of possible characters, find all chars in main list that match, and return a list of matches.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.findPossibleCharsInPlate">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">findPossibleCharsInPlate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgGrayscale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgThresh</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#findPossibleCharsInPlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.findPossibleCharsInPlate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locates all possible characters</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.loadKNNDataAndTrainKNN">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">loadKNNDataAndTrainKNN</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#loadKNNDataAndTrainKNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.loadKNNDataAndTrainKNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads and runs KNN training to ensure best results</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.recognizeCharsInPlate">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">recognizeCharsInPlate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgThresh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matchingChars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#recognizeCharsInPlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.recognizeCharsInPlate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies true character recognition</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindChars.removeInnerOverlappingChars">
+<code class="sig-prename descclassname"><span class="pre">FindChars.</span></code><code class="sig-name descname"><span class="pre">removeInnerOverlappingChars</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matchingChars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindChars.html#removeInnerOverlappingChars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindChars.removeInnerOverlappingChars" title="Permalink to this definition">¶</a></dt>
+<dd><p>If multiple chars overlap, remove the inner char. Prevents including same char twice if multiple contours are found for the same physical char.
+Ex: ‘O’ has an outer ‘O’ and an inner ‘o’
+‘R’ has an outer ‘R’ and an inner ‘D’</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-FindPlates">
+<span id="findplates-py"></span><h3>FindPlates.py<a class="headerlink" href="#module-FindPlates" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="FindPlates.detectPlatesInScene">
+<code class="sig-prename descclassname"><span class="pre">FindPlates.</span></code><code class="sig-name descname"><span class="pre">detectPlatesInScene</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">originalImage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindPlates.html#detectPlatesInScene"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindPlates.detectPlatesInScene" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds all possible plates in image by looking for rectangle contours</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindPlates.extractPlate">
+<code class="sig-prename descclassname"><span class="pre">FindPlates.</span></code><code class="sig-name descname"><span class="pre">extractPlate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgOriginal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matchingChars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindPlates.html#extractPlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindPlates.extractPlate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract plate image using contours/bounding box</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="FindPlates.findPossibleCharsInScene">
+<code class="sig-prename descclassname"><span class="pre">FindPlates.</span></code><code class="sig-name descname"><span class="pre">findPossibleCharsInScene</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgThresh</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/FindPlates.html#findPossibleCharsInScene"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FindPlates.findPossibleCharsInScene" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to detectPlatesInScene(originalImage) except that it looks for characters in each rectangle.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="flattened-images-txt">
+<h3>flattened_images.txt<a class="headerlink" href="#flattened-images-txt" title="Permalink to this headline">¶</a></h3>
+<p>Training data for personal OCR</p>
+</div>
+<div class="section" id="module-LPR_Final">
+<span id="lpr-final-py"></span><h3>LPR_Final.py<a class="headerlink" href="#module-LPR_Final" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="LPR_Final.drawRedRectangleAroundPlate">
+<code class="sig-prename descclassname"><span class="pre">LPR_Final.</span></code><code class="sig-name descname"><span class="pre">drawRedRectangleAroundPlate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">originalImage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truePlate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LPR_Final.html#drawRedRectangleAroundPlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LPR_Final.drawRedRectangleAroundPlate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws a rectangle around the found plate. Uses tuples of points to make each side of the rectangle.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="LPR_Final.main">
+<code class="sig-prename descclassname"><span class="pre">LPR_Final.</span></code><code class="sig-name descname"><span class="pre">main</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/LPR_Final.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LPR_Final.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function. Calls other functions/files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="LPR_Final.writeLicensePlateCharsOnImage">
+<code class="sig-prename descclassname"><span class="pre">LPR_Final.</span></code><code class="sig-name descname"><span class="pre">writeLicensePlateCharsOnImage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">originalImage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truePlate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LPR_Final.html#writeLicensePlateCharsOnImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LPR_Final.writeLicensePlateCharsOnImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes characters on top of input image. Also includes rectangle around plate.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="possiblechar-py">
+<h3>PossibleChar.py<a class="headerlink" href="#possiblechar-py" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="PossibleChar.PossibleChar">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">PossibleChar.</span></code><code class="sig-name descname"><span class="pre">PossibleChar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_contour</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PossibleChar.html#PossibleChar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PossibleChar.PossibleChar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Self.contour</dt>
+<dd class="field-odd"><p>Holds the contour for each char in scene</p>
+</dd>
+<dt class="field-even">Self.boundingRect</dt>
+<dd class="field-even"><p>Holds the bounding rectangle points for each char in scene</p>
+</dd>
+<dt class="field-odd">Self.intBoundingRectX</dt>
+<dd class="field-odd"><p>Used for distanceBetweenChars() = abs(firstChar.intCenterX - secondChar.intCenterX)</p>
+</dd>
+<dt class="field-even">Self.intBoundingRectY</dt>
+<dd class="field-even"><p>Used for distanceBetweenChars() = abs(firstChar.intCenterY - secondChar.intCenterY)</p>
+</dd>
+<dt class="field-odd">Self.intBoundingRectWidth</dt>
+<dd class="field-odd"><p>Width of possible character. Used in conjunction with intBoundingRectX to get X position</p>
+</dd>
+<dt class="field-even">Self.intBoundingRectHeight</dt>
+<dd class="field-even"><p>Height of possible character. Used in conjunction with intBoundingRectY to get Y position</p>
+</dd>
+<dt class="field-odd">Self.intBoundingRectArea</dt>
+<dd class="field-odd"><p>Area of possible char</p>
+</dd>
+<dt class="field-even">Self.intCenterX</dt>
+<dd class="field-even"><p>Used mainly for distance and angle between chars</p>
+</dd>
+<dt class="field-odd">Self.intCenterY</dt>
+<dd class="field-odd"><p>Used mainly for distance and angle between chars</p>
+</dd>
+<dt class="field-even">Self.fltDiagonalSize</dt>
+<dd class="field-even"><p>Used to find matching chars</p>
+</dd>
+<dt class="field-odd">Self.fltAspectRatio</dt>
+<dd class="field-odd"><p>Used to check if rectangle contains possible char</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="possibleplate-py">
+<h3>PossiblePlate.py<a class="headerlink" href="#possibleplate-py" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="PossiblePlate.PossiblePlate">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">PossiblePlate.</span></code><code class="sig-name descname"><span class="pre">PossiblePlate</span></code><a class="reference internal" href="_modules/PossiblePlate.html#PossiblePlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PossiblePlate.PossiblePlate" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Self.imgPlate</dt>
+<dd class="field-odd"><p>original image</p>
+</dd>
+<dt class="field-even">Self.imgGrayscale</dt>
+<dd class="field-even"><p>grayscale image</p>
+</dd>
+<dt class="field-odd">Self.imgThresh</dt>
+<dd class="field-odd"><p>thresholded image</p>
+</dd>
+<dt class="field-even">Self.rrLocationOfPlateInScene</dt>
+<dd class="field-even"><p>rectangle location in scene</p>
+</dd>
+<dt class="field-odd">Self.strChars</dt>
+<dd class="field-odd"><p>plate value found</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-preprocess">
+<span id="preprocess-py"></span><h3>preprocess.py<a class="headerlink" href="#module-preprocess" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="preprocess.extractValue">
+<code class="sig-prename descclassname"><span class="pre">preprocess.</span></code><code class="sig-name descname"><span class="pre">extractValue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgOriginal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocess.html#extractValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess.extractValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts HSV values from image</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="preprocess.maximizeContrast">
+<code class="sig-prename descclassname"><span class="pre">preprocess.</span></code><code class="sig-name descname"><span class="pre">maximizeContrast</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgGrayscale</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocess.html#maximizeContrast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess.maximizeContrast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does what it says on the tin. Maximizes contrast of the image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="preprocess.preprocess">
+<code class="sig-prename descclassname"><span class="pre">preprocess.</span></code><code class="sig-name descname"><span class="pre">preprocess</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgOriginal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocess.html#preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess.preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains all preprocessing functionality. Converts input to grayscale -&gt; max contrast -&gt; blur with zeros -&gt; gaussian blur -&gt; threshold
+Returns grayscale and threshold images</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">L.O.S.E.R.S</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Andrew Seamon.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
