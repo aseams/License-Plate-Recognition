@@ -21,6 +21,7 @@ $RECYCLE.BIN/
 # Directories
 Presentation/
 __pycache__/
+.idea/
 
 # Files
 API_KEY.txt

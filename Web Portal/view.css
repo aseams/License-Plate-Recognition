@@ -135,6 +135,17 @@ input.button_text
 	font-size:120%;
 	margin-right:5px;
 }
+.imgToggle
+{
+	margin-top:0;
+	width:90%;
+	margin-bottom:5px;
+	display:block;
+}
+.vehImage
+{
+	display:block;
+}
 
 /**** Inputs and Labels ****/
 label.description

@@ -118,9 +118,9 @@
 			<td>$veh_make</td>
 			<td>$veh_model</td>
 			<td onload='ShowHide($UID)'>
-				<button onclick='ShowHide($UID)' style='margin-top:0;'>toggle image</button>
+				<button class='imgToggle' onclick='ShowHide($UID)' style='margin-top:0;'>toggle image</button>
 				<a target='_blank' href='./images/$image'>
-					<img id = '$UID' src='./images/$image' style='width:150px;visibility:hidden;'>
+					<img class='vehImage' id = '$UID' src='./images/$image' style='width:150px;visibility:hidden;'>
 				</a>
 			</td>
 			<td style='font-size: 1.5vw;max-width:150px;'>$comment</td>
